@@ -1,0 +1,290 @@
+//complaince.lists
+[
+	{
+		"_id" : "postg_001",
+		"dbTechnology" : "postgres",
+		"description" : "Is Audit Enabled ?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "daily"},
+		"dueAfterDays" : 0,
+		"scan": true,
+		"instruction" : "Scan process will determine if audit is enabled",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_002",
+		"dbTechnology" : "postgres",
+		"description" : "Is Tenant DB Version In Compliance?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "daily"},
+		"dueAfterDays" : 0,
+		"scan": true,
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"instruction" : "check if tenant db version is matching with version specified in product.version, if not 1 version behind is permisable",
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_003",
+		"dbTechnology" : "postgres",
+		"description" : "Is Local Database User Found (Exception May Apply)?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "daily"},
+		"dueAfterDays" : 0,
+		"scan": false,
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"instruction" : "MGTI Sec policy prohibits creating local db user in Postgres database, all users must be maintainced in LDAP (MS-AD)",
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_004",
+		"dbTechnology" : "postgres",
+		"description" : "Are All Offboarding Tasks Completed For Terminated DBA Account?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "daily"},
+		"dueAfterDays" : 0,
+		"scan": true,
+		"instruction" : "Provide CA ticket# for all offboarding task",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_005",
+		"dbTechnology" : "postgres",
+		"description" : "Is Weekly Submission Of Audit Report Completed?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "weekly", "day" : "Monday"},
+		"dueAfterDays" : 2,
+		"scan": false,
+		"instruction" : "Provide audit report with relevant CA ticket. Once reviewed/approved by regional lead, upload the list along with email approval to {sharepoint link}",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_006",
+		"dbTechnology" : "postgres",
+		"description" : "Is Monthly Review Of Admin User List In Monitoring Tools Completed By Regional Lead? ",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "monthly", "week": 2, "day" : "Monday"},
+		"dueAfterDays" : 2,
+		"scan": true,
+		"instruction" : "Review Admin account list and upload it to >>> {sharepoint link}",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_007",
+		"dbTechnology" : "postgres",
+		"description" : "Is Monthly Backup Review Completed?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "monthly", "week": 1, "day" : "Monday"},
+		"dueAfterDays" : 2,
+		"scan": true,
+		"instruction" : "Review backup, provide some evidence (screenshot) upload it to {sharepoint link}",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_008",
+		"dbTechnology" : "postgres",
+		"description" : "Is Monthly DR Configuration Review Completed?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "monthly", "week" : 1, "day" : "Monday"},
+		"dueAfterDays" : 2,
+		"scan": false,
+		"instruction" : "Review DR replication config, ensure all data is being replicated, check if there are any lag in replication",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_009",
+		"dbTechnology" : "postgres",
+		"description" : "Is Monthly Review Of Admin User List Completed By Regional Lead ?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "monthly", "week" : 1, "day" : "Monday"},
+		"dueAfterDays" : 2,
+		"scan": false,
+		"instruction" : "Review/Upload admin user list along with GSS email approval to {sharepoint link}",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_010",
+		"dbTechnology" : "postgres",
+		"description" : "Is Monthly Database Patching Completed ?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "monthly", "week" : 2, "day" : "Monday"},
+		"dueAfterDays" : 5,
+		"scan": false,
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"instruction" : "Provide CA ticket for this activity (PROD/NON-PROD)",
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_011",
+		"dbTechnology" : "postgres",
+		"description" : "Is Quarterly Local Database Admin Account Password Changed?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "quarterly", "month" : 1 , "week" : 2, "day" : "Monday"},
+		"dueAfterDays" : 2,
+		"scan": true,
+		"instruction" : "Provide CA ticket# for password change",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_012",
+		"dbTechnology" : "postgres",
+		"description" : "Is Quarterly Database Restore Drill Completed ?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "quarterly", "month" : 2, "week" : 2, "day" : "Monday"},
+		"dueAfterDays" : 2,
+		"scan": false,
+		"instruction" : "Provide CA ticket for this activity",
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"_config" : {
+			"relaitveMethod" : 	{"lib" : "scan", "cls" : "PostgScan", "method" : "scanAuditEnabled"},
+			"status" :	"active"
+		},
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	},
+	{
+		"_id" : "postg_013",
+		"dbTechnology" : "postgres",
+		"description" : "Is Annual OS User (postgres) Password Change Completed?",
+		"status" : "Pending",
+		"result" : "",
+		"schedule" : {"freq" : "yearly", "month" : 1, "week" : 2, "day" : "Monday"},
+		"dueAfterDays" : 5,
+		"scan": false,
+		"eventHistory" : [{"ts" : "", "event" : "", "who" : "", "supporitngDoc" : {}}],
+		"instruction" : "Provide CA ticket for this activity",
+		"_history" : [
+			{
+				"ts" : new Date(), 
+				"who" : "u1167965", 
+				"what" : "building compliance list"
+			}
+		]
+	}
+]

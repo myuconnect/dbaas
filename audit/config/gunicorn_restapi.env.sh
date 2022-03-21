@@ -1,0 +1,13 @@
+OPCO=MARSH
+REGION=NAM
+DOMAIN=corp
+DC_LOCATION=dallas
+APP_NAME=FLASK
+FLASK_APP=flask
+BASE_DIR=/opt/ansible/
+FLASK_HOME=/opt/ansible/app/common
+FLASK_CONFIG=/opt/ansible/app/common/config
+FLASK_LOG=/opt/ansible/app/common/log
+ENV=prod
+APP_CONFIG=/opt/ansible/app/common/config
+PYTHONPATH=/opt/ansible/app/

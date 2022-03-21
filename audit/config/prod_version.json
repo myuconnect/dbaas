@@ -1,0 +1,34 @@
+// product.version
+[
+	{
+		"_id" : "mongo",
+		"version" : [
+			{
+				"baseRelease" : "3",
+				"currentVersion" : "3.6.12",
+				"releasedDate" : new Date(),
+				"ts" : new Date(),
+				"who" : "u1167965"
+			},
+			{
+				"baseRelease" : "4",
+				"currentVersion" : "4.0.8",
+				"releasedDate" : new Date(),
+				"ts" : new Date(),
+				"who" : "u1167965"
+			}
+		]
+	},
+	{
+		"_id" : "postgres",
+		"version" : [
+			{
+				"baseRelease" : "11",
+				"currentVersion" : "11.2",
+				"releasedDate" : new Date(),
+				"ts" : new Date(),
+				"who" : "u1167965"
+			}
+		]
+	}
+]

@@ -1,0 +1,140 @@
+1. All host must have env variable "region", "opco"
+
+// compliance.list
+	_id
+	dbTechnology 	Mongo/Postgres
+	descriptions
+	scan (bool)
+	relaitveMethod 	{"class" : "", "method" : "", "param" : {}}
+	frequency (daily, weekly, monthly, quarterly, yearly)
+	status	(active/inactive)
+	startDate
+	endDate
+	dispensation
+		supportingDoc:
+		startDate
+		endDate
+	_history [{"when", "who" : "who changed it (networkid), "what" : "what was changed"}]
+
+// localDBUserInfo (store db user password change history)
+	_id : tenant
+	username
+	dbTechnology
+	_history:
+		{"ts" : "", "chnageOrder#", : ""}
+
+// off_boarding.tasks			(Store all on boardding tasks)
+	taskId
+	taskName
+	__history
+		{"ts" : "", "who" : "" "what" : ""}
+
+// on_oarding.taks 		(Store all off boarding tasks)
+	taskId
+		_id : 1
+	taskName
+		"Create co to add to Centrify group (CIFY....., CIFY...)"
+	__history
+		{"ts" : "", "who" : "" "what" : ""}
+
+// admin_lists
+	region
+	networkId
+	centrifyGroup 	- Array centrify group this user is part of
+	lastName
+	firstName
+	fullName
+	opco			- Opco to which this network id belongs to
+	vendorOrg
+	onBoardingTS
+	offBoardingTS
+	isActive
+	onBoardingDocs	-- Array with Dict (all tasks as referred in on boarding should have supporting docs)
+		[{"_id" : , "suppDoc:" : "CO# 13869"}]
+	offBoardingDocs	-- Array with Dict (all tasks as referred in off boarding should have supporting docs)
+
+// hosts --	Store all the components of all hosts
+	_id 		-- hostName (fwdn)
+	domain		-- CORP/DMZ
+	dcLocation 	-- Datacenter location
+	region		-- NAM/EMEA/APAC/SAM
+	opco 		-- MARSH/GC/OW
+	name 
+	ipAddress
+	cpu
+	memory
+	users
+	fs
+	otherHwDetails 
+		censor 		-- 
+		battery		--
+
+
+// host.snaps.hist
+	Store all snapshots which is taken during the scan
+
+// tenants
+	_id :	host.dbVenodr.port
+	tenantType:			database/os
+	tenantVendor: 		mongo/oracle/postgres
+	tenantPort: 				port used by this product
+	instanceType:		Mongo - Replica Set/Mongo-Stand Alone/Postgres - Cluster
+	instanceName:		Cluster name
+	config :	{}
+	compliance:
+		total:
+		passed: 
+		failed: (list of failed compliance)
+		dispensation: [total compliance dispensation filed for]
+	totalCompliance:
+	passedCompliance:
+
+	all host tenants
+
+// tenant.compliance
+	All tenants compliance will be stored for a given host
+
+// tenant.scan (will store each scan output in this collection)
+	_id : tenantId
+	name : 
+
+// tenant.change.history	(will store all the changes during the scan for a given tenant, i.e. config change)
+
+// tenant.audit.open
+	_id
+	auditEvent
+	acknowledged
+	acknowledgedBy
+	suppDocs
+	status	(open -> wip -> closed)
+	_history [{}] 			(will store hostory of event happened to this audit events)
+
+// tenant.audit.history
+	_id
+	auditEvent
+	acknowledged
+	acknowledgedBy
+	suppDocs
+
+	status	(open -> wip -> closed)
+	_history [{}] 			(will store hostory of event happened to this audit events)
+
+// tenant.compliance (compliance)
+
+// version.master 		(master list of version of each technology)
+	product
+	compVersion
+
+// scan.stats (store all scan stats)
+	ts
+	host
+	tenant
+	startTs
+	endTs
+	comments
+
+
+
+// Scan
+// User input (REST API) AddChangeOrderForLocalDBChgPass()
+// User input (metadata)

@@ -1,0 +1,11 @@
+{
+	"legacyRepo" : {
+		"dbType" : "Oracle",
+		"dbHost" : "usfkl21db98v.mrshmc.com",
+		"dbPort" : 1521,
+		"serviceName" : "oltp55",
+		"connectStr" : "(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = usfkl21db98v.mrshmc.com)(PORT = 1521))(CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = oltp55))",
+		"dbUser" : "dba_admin",
+		"dbEncPass" : "REJBOF9KdWxfMjAxOV9QYWNpZmlj"
+	}
+}

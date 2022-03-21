@@ -1,0 +1,112 @@
+{
+	"version": 1,
+	"emailNotification" : true,
+	"emailNotificationDL" : "anil.singh@marsh.com",
+	"pidFile" : "auto_deploy.pid",
+	"keyFile" : "key.json",
+	"repository" : {
+		"non-prod" : {
+			"type" : "postgres",
+			"host" : "usdf23v0801",
+			"port" : 5535,
+			"user" : "svc-dev-deploy-app",
+			"userEncPass" : "eXokNzl5NEUzOWdXNCkp",
+			"db" : "deploy_repo",
+			"connect_timeout": 3,
+			"keepalives" : 2,
+			"keepalives_idle" : 5,
+			"keepalives_interval" : 2,
+			"keepalives_count" : 2
+		},
+		"prod" : {
+			"type" : "postgres",
+			"host" : "usdf23v0801",
+			"port" : 5535,
+			"user" : "vc-dev-deploy-app",
+			"userEncPass" : "eXokNzl5NEUzOWdXNCkp",
+			"db" : "deploy_repo",
+			"connect_timeout": 3,
+			"keepalives" : 2,
+			"keepalives_idle" : 5,
+			"keepalives_interval" : 2,
+			"keepalives_count" : 2
+		},
+		"prod_new" : {
+			"type" : "postgres",
+			"host" : "usdf23v0801",
+			"port" : 5538,
+			"user" : "svc-prod-deploy-app",
+			"userEncPass" : "",
+			"db" : "deploy_repo",
+			"connect_timeout": 3,
+			"keepalives" : 2,
+			"keepalives_idle" : 5,
+			"keepalives_interval" : 2,
+			"keepalives_count" : 2
+		}
+
+	},
+	"adminSrvcGroup" : {
+		"oracle" : ["CTFY-UG_NA_Marsh_dba-S-L","CTFY-UG_APAC_Marsh_dba-S-L","CTFY-UG_EMEA_Marsh_dba-S-L"],
+		"postgres" : ["CTFY-UG_NA_Marsh_dba-S-L","CTFY-UG_APAC_Marsh_dba-S-L","CTFY-UG_GLB_Marsh_PG_Cont-S-L"],
+		"mysql" : ["CTFY-UG_APAC_Marsh_dba-S-L","CTFY-UG_NA_Marsh_dba-S-L"],
+		"mongo" : ["CTFY-UG_NA_Marsh_dba-S-L","CTFY-UG_GLB_Marsh_MGDB_Cont-S-L","CTFY-UG_APAC_Marsh_dba-S-L"],
+		"mssql" : [],
+		"approverGrp" : [
+			{"region" : "nam" , "ctfyGrp" : ["CTFY-UG_NA_Marsh_dba-S-L"]},
+			{"region" : "apac", "ctfyGrp" : ["CTFY-UG_APAC_Marsh_dba-S-L"]}
+		]
+	},
+	"deploy" : {
+		"oracle" : {
+			"prod" : {"user" : "deploy_admin", "userEncPass" : "UDQwZF9EZVAxb3lfQWRNMW4="},
+			"non-prod" : {"user" : "deploy_admin", "userEncPass" : "TWE0NWhfRDNwbDB5X2FEbTFu"}
+		},
+		"postgres" : {
+			"dev" : {"user" : "svc-dev-deploy-app", "userEncPass" : ""},
+			"test" : {"user" : "svc-qa-deploy-app", "userEncPass" : ""},
+			"stg" : {"user" : "svc-uat-deploy-app", "userEncPass" : ""},
+			"prod" : {"user" : "svc-prd-deploy-app", "userEncPass" : ""}
+		},
+		"mongo" : {
+			"dev" : {"user" : "svc-dev-deploy-app", "userEncPass" : ""},
+			"uat" : {"user" : "svc-uat-deploy-app", "userEncPass" : ""},
+			"prod" : {"user" : "svc-prd-deploy-app", "userEncPass" : ""}
+		}
+	},
+	"jiraUrl" : "https://dev.jira.mrshmc.com",
+	"jiraUser" : "svc-dev-deploy-app",
+	"jiraUserEncPass" : "TDhlc2J5KW44ZnBqOikp",
+	"ldap" : {
+		"DALLAS" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		},
+		"FRANKLIN" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		},
+		"BEDFORD" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		},
+		"EXETER" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		}
+	},
+	"houseKeeping" : {
+		"logFileRetentionDays" : 30,
+		"deployDocRetentionDays" : 30
+	},
+	"osUsers" : ["mongo","postgres"],
+	"suppBootstrapFiles" : [
+		{"logging" : "app/common/config/logging.json"},
+		{"factory" : "app/common/config/factory_meta.json"},
+		{"pg" : "app/cicd/config/pg_init.json"},
+		{"dbass" : "app/cicd/config/dbass.json"},
+		{"cicd" : "app/cicd/config/cicd.json"},
+		{"audit" : "app/audit/config/audit.json"},
+		{"dbConfig" : "app/audit/config/dbconfig.json"}
+	]
+}

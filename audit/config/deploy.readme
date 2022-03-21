@@ -1,0 +1,89 @@
+#### Deploy app (common/db/audit) from ansible
+# from Ansible server as ansible user
+
+cd /opt/ansible/app/source
+
+cp -p /opt/ansible/app/source/com/mmc/common/*.py /opt/ansible/app/audit/deploy/com/mmc/common/.
+cp -p /opt/ansible/app/source/com/mmc/audit/*.py /opt/ansible/app/audit/deploy/com/mmc/audit/.
+cp -p /opt/ansible/app/source/com/mmc/db/*.py /opt/ansible/app/audit/deploy/com/mmc/db/.
+
+tar -cvzf /opt/ansible/app/audit/deploy/com_audit.tar.gz com/
+
+cd /opt/ansible/app/audit
+tar -cvzf /opt/ansible/app/audit/deploy/deploy_audit_config.tar.gz config/
+
+echo "com_audit.tar.gz" > files.txt
+echo "deploy_audit_config.tar.gz" >> files.txt
+echo "run_audit.sh" >> files.txt
+
+scp -p $(cat files.txt) u1167965@usdf21v0126:/tmp/.
+scp -p $(cat files.txt) u1167965@usdf21v0127:/tmp/.
+scp -p $(cat files.txt) u1167965@usfkl21db130v:/tmp/.
+scp -p $(cat files.txt) u1167965@usfkl22db10v:/tmp/.
+scp -p $(cat files.txt) u1167965@gbbe21v0190:/tmp/.
+
+scp -p $(cat files.txt) u1167965@gbbe21v0193:/tmp/.
+scp -p $(cat files.txt) u1167965@gbbe21v0194:/tmp/.
+scp -p $(cat files.txt) u1167965@gbbe21v0195:/tmp/.
+scp -p $(cat files.txt) u1167965@gbex22v0002:/tmp/.
+scp -p $(cat files.txt) u1167965@gbex22v0003:/tmp/.
+
+scp -p $(cat files.txt) u1167965@AUSY21V0049:/tmp/.
+scp -p $(cat files.txt) u1167965@AUSY21V0050:/tmp/.
+scp -p $(cat files.txt) u1167965@AUME22V0003:/tmp/.
+
+# target server
+
+1. create relevant directory
+	
+export BASE_DIR="/opt/mongo"
+mkdir -p ${BASE_DIR}/app/audit/log
+
+
+2. untar & copy files from /tmp directory
+
+# config tar should be copied once, else this will overwrite password strored encrypted in dbconfig.json/bootstrap.json
+# cd /opt/mongo/app/audit/
+# tar -xvf /tmp/deploy_audit_config.tar.gz
+
+cd /opt/mongo/app
+rm -fR com 
+tar -xvf /tmp/deploy_audit_com.tar.gz
+ls -latr com/mmc/common/*.py 
+ls -latr com/mmc/db/*.py 
+ls -latr com/mmc/audit/*.py 
+
+U2FpQmFiYUNoYXJuYW0wMQ==
+
+#<replace file with the file which u want to see whether it has been change
+
+cp -p /tmp/run_audit.sh /opt/mongo/app/.
+
+
+3. Change OPCO/DC LOCATION/DBTECHNOLOGY in run_audit.sh
+4. change password in dbconfig.json and bootstrap.json
+5. tar exisitng audit log to archive
+	mkdir -p <auditlog_loc>/archive
+	ls -l <aud_prefix>.bson* | grep -i "mar" | awk '{print $9}' | xargs tar cvfz ./archive/<aud_prefix>_Bson_jun_2019.tar.gz
+	#ls -l aud_prd01_gbbe21v0194*.bson* | grep -i "jun" | awk '{print $9}' | xargs tar cvfz ./archive/aud_prod01_gbbe21v0194_Bson_june_2019.tar.gz
+
+6. schedule a job to run on mon to sat @ 1am
+
+# Audit frame work job (Anil Singh - 07/23/2019)
+30 01 * * 1-6 /opt/mongo/app/run_audit.sh 2>&1
+
+
+# setenv_audit.sh
+export ENV="PROD"
+export BASE_DIR=/opt/mongo/app
+export APP_NAME=AUDIT
+export AUDIT_HOME=/opt/mongo/app/audit
+export APP_CONFIG=${AUDIT_HOME}/config
+export APP_LOG=${AUDIT_HOME}/log
+export PYTHONPATH=$BASE_DIR
+export REGION="NAM"
+export OPCO="MARSH"
+export DC_LOCATION="FRANKLIN"
+export DOMAIN="DMZ"
+
+export GIT_PYTHON_REFRESH=quiet

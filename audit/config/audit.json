@@ -1,0 +1,93 @@
+{
+	"auditScanUser" : {
+		"dev" : {"domainAdUser" : "DMZPROD01\\svc-dev-deploy-app"},
+		"uat" : {"domainAdUser" : "DMZPROD01\\svc-uat-deploy-app"},
+		"prod" :{"domainAdUser" : "DMZPROD01\\svc-prod-deploy-app"}
+	},
+	"restApiEndPoint" : {
+		"dev" : {"url" : "http://usdfw21as383v.mrshmc.com:8000/api/audit/processRequest", "host" : "usdfw21as383v.mrshmc.com", "port" : 8000},
+		"prod" : {"url" : "http://usdfw21as383v.mrshmc.com:8000/api/audit/processRequest", "host" : "usdfw21as383v.mrshmc.com", "port" : 8000}
+	},
+	"repositoryDBType" : "mongo",
+	"repositoryDB" : {
+		"mongo" : {
+			"dev" : {
+				"hosts": "usdfw21as383v:27011,usdfw21as383v:27012,usdfw21as383v:27013",
+				"replicaSet": "rs_test",
+				"userId" : "mongo_admin",
+				"userEncPass" : "ZnNkYVRFc3MxMDE=",
+				"userType" : "internal",
+				"authMech" : "SCRAM-SHA-1",
+				"authDB" : "admin",
+				"db": "audit_dev"
+			},
+			"prod" : {
+				"hosts": "usdfw21as383v:27011,usdfw21as383v:27012,usdfw21as383v:27013",
+				"replicaSet": "rs_test",
+				"userId" : "mongo_admin",
+				"userEncPass" : "ZnNkYVRFc3MxMDE=",
+				"userType" : "internal",
+				"authMech" : "SCRAM-SHA-1",
+				"authDB" : "admin",
+				"db": "audit_prod"
+			}
+		}
+	},
+	"ldap" : {
+		"DALLAS" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		},
+		"FRANKLIN" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		},
+		"BEDFORD" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		},
+		"EXETER" : {
+			"dev" : "usdfw1.ldap.corp.mmco.int:389",
+			"prod" : "usdfw1.ldap.dmzprod01.mrshmc.com:389"
+		}
+	},
+	"database" : {
+		"mongo": {
+			"auditFilter" : [
+				"createDatabase",
+				"dropDatabase",
+				"createUser",
+				"dropCollection",
+				"dropUser",
+				"dropAllUsersFromDatabase",
+				"updateUser",
+				"grantRolesToUser",
+				"createRole",
+				"updateRole",
+				"dropRole",
+				"dropAllRolesFromDatabase",
+				"grantRolesToRole",
+				"revokeRolesFromRole",
+				"grantPrivilegesToRole",
+				"shutdown"
+			]
+		}
+	},
+	"pg" : {
+		"settings" : {
+			"connection": {
+				"autocommit" : false,
+				"client_encoding" : "UTF-8",
+				"isolation_level" : 1
+			},
+			"cursor" : {
+				"arraysize" : 100,
+				"itersize" : 200,
+				"withhold" : false
+			},
+			"execution" : {
+				"maxRetries" : 5
+			}
+		}
+	}
+}

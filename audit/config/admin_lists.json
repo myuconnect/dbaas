@@ -1,0 +1,43 @@
+//  ADMIN LIST STRUCTURE
+[
+    {
+
+        "_id" : "u116899",
+        "region" : "nam",
+        "centrifyGroup" : "ctfy_grp_test",
+        "lastName" : "smith",
+        "firstName" : "jones",
+        "fullName" : "Jones Smith",
+        "opco" : [
+            "nam"
+        ],
+        "dbTechnology" :["mongo"],
+        "vendorOrg" : "DataVail",
+        "onBoardingTS" : "",
+        "offBoardingTS" : "",
+        "status" : "active",
+        "onBoardingTaskStartDt" : "",
+        "onBoardingTaskEndDt" : "",
+        "offBoardingTaskStartDt" : "",
+        "offBoardingTaskEndDt" : "",
+        "onBoardingTasks" : [
+            {
+                "taskId" : "<str, boarding task id>", 
+                "ts" : "ts, when this task was updated", 
+                "who" : "str, networkid who provided this evidence",
+                "evidenceDoc" : "<str, change order or other document id>",
+                "comments" : "str, relevant comments on this task"
+            }
+        ],
+        "offBoardingTasks" : [
+            {
+                "taskId" : "<str, boarding task id>", 
+                "ts" : "ts, when this task was updated", 
+                "who" : "str, networkid who provided this evidence",
+                "evidenceDoc" : "<str, change order or other document id>",
+                "comments" : "str, relevant comments on this task",
+                "dueDate" : ""
+            }
+        ]
+    }
+]

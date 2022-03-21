@@ -1,0 +1,220 @@
+[
+  {
+    "region": "North America",
+    "opco": "Marsh",
+    "dbTechnology": "Postgres",
+    "date": "2019/05/20",
+    "hosts": [
+      {
+        "host": "usdf21v0034",
+        "dcLocation": "Dallas (USA)",
+        "compliances": [
+          {
+            "id": "comp_pg_10001",
+            "name": "Ensure PG_AUDIT is installed",
+            "passed": false,
+            "comments": "pg_audit is not installed"
+          },
+          {
+            "id": "comp_pg_10002",
+            "name": "Is Audit enabled ?",
+            "passed": false,
+            "comments": "Missing required audit component (create table)"
+          },
+          {
+            "id": "comp_pg_10003",
+            "name": "Offboarding tasks completed for terminated DBA",
+            "passed": true,
+            "comments": "All tasks are completed for terminated DBAs"
+          },
+          {
+            "id": "comp_pg_10004",
+            "name": "Monthly ADMIN list review by regional Lead",
+            "passed": false,
+            "comments": "Monthly ADMIN list is not yet prepared"
+          },
+          {
+            "id": "comp_pg_10005",
+            "name": "Monthly ADMIN list review by GSS ",
+            "passed": false,
+            "comments": "ADMIN list is not submitted for review"
+          },
+          {
+            "id": "comp_pg_10006",
+            "name": "Weekly submission of audit report",
+            "passed": true,
+            "comments": "Audit report is submitted/approved"
+          }
+        ]
+      },
+      {
+        "host": "usdf21v0035",
+        "dcLocation": "Dallas (USA)",
+        "compliances": [
+          {
+            "id": "comp_pg_10001",
+            "name": "Ensure PG_AUDIT is installed",
+            "passed": true,
+            "comments": "pg_audit is installed"
+          },
+          {
+            "id": "comp_pg_10002",
+            "name": "Is Audit enabled ?",
+            "passed": false,
+            "comments": "Missing required audit component (drop table)"
+          },
+          {
+            "id": "comp_pg_10003",
+            "name": "Offboarding tasks completed for terminated DBA",
+            "passed": true,
+            "comments": "All tasks are completed for terminated DBAs"
+          },
+          {
+            "id": "comp_pg_10004",
+            "name": "Monthly ADMIN list review by regional Lead",
+            "passed": false,
+            "comments": "Monthly ADMIN list is not yet prepared"
+          },
+          {
+            "id": "comp_pg_10005",
+            "name": "Monthly ADMIN list review by GSS ",
+            "passed": false,
+            "comments": "Monthly ADMIN list is not yet prepared"
+          },
+          {
+            "id": "comp_pg_10006",
+            "name": "Weekly submission of audit report",
+            "passed": true,
+            "comments": "Audit report is submitted and approved"
+          }
+        ]
+      },
+      {
+        "host": "usdf21v0036",
+        "dcLocation": "Dallas (USA)",
+        "compliances": [
+          {
+            "id": "comp_pg_10001",
+            "name": "Ensure PG_AUDIT is installed",
+            "passed": true,
+            "comments": "pg_audit is installed"
+          },
+          {
+            "id": "comp_pg_10002",
+            "name": "Is Audit enabled ?",
+            "passed": true,
+            "comments": "Audit is enabled"
+          },
+          {
+            "id": "comp_pg_10003",
+            "name": "Offboarding tasks completed for terminated DBA",
+            "passed": true,
+            "comments": "All tasks are completed for terminated DBAs"
+          },
+          {
+            "id": "comp_pg_10004",
+            "name": "Monthly review of ADMIN list by regional Lead",
+            "passed": false,
+            "comments": "Monthly review list is not yet prepared"
+          },
+          {
+            "id": "comp_pg_10005",
+            "name": "Monthly review of Admin list by GSS ",
+            "passed": false,
+            "comments": "Monthly ADMIN list is not submitted for review"
+          },
+          {
+            "id": "comp_pg_10006",
+            "name": "Weekly submission of audit report",
+            "passed": true,
+            "comments": "Audit report is submitted/approved"
+          }
+        ]
+      },
+      {
+        "host": "usdf21v0037",
+        "dcLocation": "Dallas (USA)",
+        "compliances": [
+          {
+            "id": "comp_pg_10001",
+            "name": "Ensure PG_AUDIT is installed",
+            "passed": false,
+            "comments": "pg_audit is not installed"
+          },
+          {
+            "id": "comp_pg_10002",
+            "name": "Is Audit enabled ?",
+            "passed": false,
+            "comments": "Audit is not enabled"
+          },
+          {
+            "id": "comp_pg_10003",
+            "name": "Offboarding tasks completed for terminated DBA",
+            "passed": true,
+            "comments": "All tasks are completed for terminated DBAs"
+          },
+          {
+            "id": "comp_pg_10004",
+            "name": "Monthly ADMIN list review by regional Lead",
+            "passed": true,
+            "comments": "Monthly ADMIN list approved by regional lead"
+          },
+          {
+            "id": "comp_pg_10005",
+            "name": "Monthly ADMIN list review by GSS ",
+            "passed": true,
+            "comments": "ADMIN list approved by GSS"
+          },
+          {
+            "id": "comp_pg_10006",
+            "name": "Weekly submission of audit report",
+            "passed": true,
+            "comments": "Audit report is submitted and approved"
+          }
+        ]
+      },
+      {
+        "host": "usdf21v0038",
+        "dcLocation": "Dallas (USA)",
+        "compliances": [
+          {
+            "id": "comp_pg_10001",
+            "name": "Ensure PG_AUDIT is installed",
+            "passed": true,
+            "comments": "pg_audit is not installed"
+          },
+          {
+            "id": "comp_pg_10002",
+            "name": "Is Audit enabled ?",
+            "passed": true,
+            "comments": "Missing required audit component (create table)"
+          },
+          {
+            "id": "comp_pg_10003",
+            "name": "Offboarding tasks completed for terminated DBA",
+            "passed": true,
+            "comments": "All tasks are completed for terminated DBAs"
+          },
+          {
+            "id": "comp_pg_10004",
+            "name": "Monthly ADMIN list review by regional Lead",
+            "passed": true,
+            "comments": "Monthly ADMIN list is reviewed by regional lead"
+          },
+          {
+            "id": "comp_pg_10005",
+            "name": "Monthly ADMIN list review by GSS ",
+            "passed": false,
+            "comments": "ADMIN list is not submitted for review"
+          },
+          {
+            "id": "comp_pg_10006",
+            "name": "Weekly submission of audit report",
+            "passed": false,
+            "comments": "Audit report is not submitted for approval"
+          }
+        ]
+      }
+    ]
+  }
+]

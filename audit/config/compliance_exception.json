@@ -1,0 +1,20 @@
+[
+	{ 
+		"_id" : "mongo_003",
+		"ts" : new Date(), 
+		"supportingDoc" : "Root user mongo_admin needed to perform DBA/root tasks, mms-.. users needed by Ops Manager",
+		"startDate" : new Date(),
+		"endDate" : new Date("9999,12, 31"),
+		"exceptionList" : ["mongo_admin","mms-automation","mms-backup","mms-backup-agent","mms-monitor","mms-monitoring-agent"],
+		"comments" : "mms-... local db users are required by Ops Manager, mongo_admin password is changed quarterly"
+	},
+	{ 
+		"_id" : "mongo_011",
+		"ts" : new Date(), 
+		"supportingDoc" : "mms-.. local database users are managed by Ops Manager, adding them to exclusion list",
+		"startDate" : new Date(),
+		"endDate" : new Date("9999,12, 31"),
+		"exceptionList" : ["mms-automation","mms-backup","mms-backup-agent","mms-monitor","mms-monitoring-agent"],
+		"comments" : "mms-... local db users are required by Ops Manager"
+	}
+]

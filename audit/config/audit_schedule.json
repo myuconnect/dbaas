@@ -1,0 +1,223 @@
+[{
+  "_id": "mongo.test.1",
+  "name": "Mongo Monthly Reports (Test 1)",
+  "opco" : "MARSH",
+  "dbTechnology" : "mongo",
+  "status": "Active",
+  "recepient" : "anil.singh1@mmc.com",
+  "schedule": {
+    "freq": "monthly",
+    "week": 1,
+    "day": "monday",
+    "time": "05:00",
+    "return": [
+      "startDateStr",
+      "endDateStr"
+    ]
+  }
+},
+{
+  "_id": "mongo.test.2",
+  "name": "Mongo Quarterly Reports (Test 2)",
+  "opco" : "MARSH",
+  "dbTechnology" : "mongo",  
+  "status": "Active",
+  "recepient" : "anil.singh1@mmc.com",
+  "schedule": {
+    "freq": "quarterly",
+    "month": 1,
+    "week": 1,
+    "day": "monday",
+    "time": "05:00",
+    "return": [
+      "startDateStr",
+      "endDateStr"
+    ]
+  }
+},
+{
+  "_id": "mongo.test.3",
+  "name": "Mongo Yearly Reports (Test 3)",
+  "opco" : "MARSH",
+  "dbTechnology" : "mongo",
+  "status": "Active",
+  "recepient" : "anil.singh1@mmc.com",
+  "schedule": {
+    "freq": "yearly",
+    "month": 1,
+    "week": 1,
+    "day": "monday",
+    "time": "05:00",
+    "return": [
+      "startDateStr",
+      "endDateStr"
+    ]
+  }
+},
+{
+  "_id": "mongo.weekly.aud.report",
+  "name": "Mongo Weekly Audit Report",
+  "opco" : "MARSH",
+  "dbTechnology" : "mongo",
+  "status": "Active",
+  "recepient" : "anil.singh1@mmc.com",
+  "schedule": {
+    "freq": "weekly",
+    "day": "Monday",
+    "businessDays": true,
+    "time": "05:00",
+    "return": [
+      "startDateStr",
+      "endDateStr"
+    ]
+  },
+  "program": "python",
+  "command": {
+    "module": "com.mmc.audit.audit_reports",
+    "class": "Reports",
+    "method": "genMongoAuditReport",
+    "argType": "kw",
+    "arguments": [
+      {
+        "argKey": "opco",
+        "argValue": "MARSH",
+        "argValSource": "static"
+      },
+      {
+        "argKey": "env",
+        "argValue": "prod",
+        "argValSource": "static"
+      },
+      {
+        "argKey": "dbTechnology",
+        "argValue": "mongo",
+        "argValSource": "static"
+      },
+      {
+        "argKey": "region",
+        "argValue": "ALL",
+        "argValSource": "static"
+      },
+      {
+        "argKey": "tenantList",
+        "argValue": ["ALL"],
+        "argValSource": "static"
+      },
+      {
+        "argKey": "startDate",
+        "argDataType": "string",
+        "argValSource": "var"
+      },
+      {
+        "argKey": "endDate",
+        "argDataType": "string",
+        "argValSource": "var"
+      }
+    ]
+  }
+},
+{
+  "_id": "mongo.monthly.superUser.report",
+  "name": "Mongo Monthly Super User Report",
+  "opco" : "MARSH",
+  "dbTechnology" : "mongo",
+  "status": "Active",
+  "recepient" : "anil.singh1@mmc.com",
+  "schedule": {
+    "freq": "monthly",
+    "week": 1,
+    "day": "Monday",
+    "businessDays": true,
+    "time": "05:00",
+    "return": [
+      "startDateStr",
+      "endDateStr"
+    ]
+  },
+  "program": "python",
+  "command": {
+    "module": "com.mmc.audit.audit_reports",
+    "class": "Reports",
+    "method": "genAdminUserSummaryReport",
+    "argType": "kw",
+    "arguments": [
+      {
+        "argKey": "opco",
+        "argValue": "MARSH",
+        "argValSource": "static"
+      }      
+    ]
+  }
+},
+{
+  "_id": "mongo.quarterly.opsmgr.report",
+  "name": "Mongo Quarterly Ops Manager Admin Report",
+  "opco" : "MARSH",
+  "dbTechnology" : "mongo",
+  "status": "Active",
+  "recepient" : "anil.singh1@mmc.com",
+  "schedule": {
+    "freq": "quarterly",
+    "month": 1,
+    "week": 1,
+    "day": "Monday",
+    "businessDays": true,
+    "time": "05:00",
+    "return": [
+      "startDateStr",
+      "endDateStr"
+    ]
+  },
+  "program": "python",
+  "command": {
+    "module": "com.mmc.audit.audit_reports",
+    "class": "Reports",
+    "method": "genOpsMgrUserReport",
+    "argType": "kw",
+    "arguments": [
+      {
+        "argKey": "opco",
+        "argValue": "MARSH",
+        "argValSource": "static"
+      }
+    ]
+  }
+},
+{
+  "_id": "mongo.monthly.hostDetails.report",
+  "name": "Mongo Monthly Usage Report (Licensing)",
+  "opco" : "MARSH",
+  "dbTechnology" : "mongo",
+  "status": "Active",
+  "recepient" : "anil.singh1@mmc.com",
+  "schedule": {
+    "freq": "monthly",
+    "week": 1,
+    "day": "Monday",
+    "businessDays": true,
+    "time": "05:00",
+    "return": [
+      "startDateStr",
+      "endDateStr"
+    ]
+  },
+  "program": "python",
+  "command": {
+    "module": "com.mmc.audit.audit_reports",
+    "class": "Reports",
+    "method": "genAllHostDetailsReport",
+    "argType": "kw",
+    "arguments": [
+      {
+        "argKey": "opco",
+        "argValue": "MARSH",
+        "argValSource": "static"
+      },
+      {
+        "argKey": "dbTechnology",
+        "argValue": "mongo",
+        "argValSource": "static"
+      }
+    ]
+  }
+}]

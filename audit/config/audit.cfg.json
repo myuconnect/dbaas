@@ -1,0 +1,37 @@
+
+{
+	"version": 1,
+	"emailNotification" : true,
+	"emailNotificationDL" : "",
+	"pidFile" : "auto_deploy.pid",
+	"requiredModules" : ["pymongo","psutil","ldap3","cryptography","bitbucket"],
+	"defaultString4Signature" : "qY88888r3491Gmirhgrt2sdf#E139h@nt",
+	"salt" : "",
+	"keyFile" : "key.json",
+	"env" : "dev",
+	"repositoryDB" : "mongo",
+	"deployLogFile" : "{doc}_{env}_{now}_deploy.log",
+	"nexusDeployFile" : "{prefix}_deploy.json",
+	"nexusUrl" : "http://nam.marshnexus.mrshmc.com/repository/Onprem_Prod_RAW_Hosted_Repo/",
+	"nexusUser" : "admin",
+	"nexusUserEncPass" : "gAAAAABcXZBb2wx4rIvScd5fxzYM1G83KIwOPYkcaxQlHxcbvS9AJQY4w-l-aATT9b0Mix0VeMcyAva18tYhlkrev9yRVliGKg==",
+	"bitBucketUrl" : "",
+	"bitBucketUser" : "u1167965",
+	"bitBucketUserEncPass" : "gAAAAABcft4azsQEhUG9zMoGT4rdD18W4eFF6V-hQq3ylcBx7Ke3W99jiTOAuXApjoLpXCibMR3AW8O1qMp4Gt5Rsin4PxAcfA==",
+	"deployFile" : "deploy.json",
+	"jiraUrl" : "https://dev.jira.mrshmc.com",
+	"jiraUser" : "u1167965",
+	"jiraUserEncPass" : "gAAAAABcft4azsQEhUG9zMoGT4rdD18W4eFF6V-hQq3ylcBx7Ke3W99jiTOAuXApjoLpXCibMR3AW8O1qMp4Gt5Rsin4PxAcfA==",
+	"stagingLocation" : "c:\\app\\mongo_deploy\\backup",
+	"rollbackWithinDaysLimit" : 10,
+	"rollbackFile" : "task_{taskId}_{sourceOp}_rollback.json",
+	"houseKeeping" : {
+		"logFileRetentionDays" : 30,
+		"deployDocRetentionDays" : 30
+	},
+	"suppBootstrapFiles" : [
+		{"dbConfig" : "dbconfig.json"},
+		{"logging" : "logging.json"}
+	],
+	"maxDeploymentLimits" : 40
+}

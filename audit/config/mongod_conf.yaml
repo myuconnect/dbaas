@@ -1,0 +1,71 @@
+net:
+   port: <int>
+   bindIp: <string>
+   maxIncomingConnections: <int>
+   wireObjectCheck: false
+   ipv6: false
+   unixDomainSocket:
+      enabled: true
+      pathPrefix: <string>
+      filePermissions: <int>
+   tls:
+      certificateSelector: <string>
+      clusterCertificateSelector: <string>
+      mode: "preferTLS"
+      certificateKeyFile: <string>
+      certificateKeyFilePassword: <string>
+      clusterFile: <string>
+      clusterPassword: <string>
+      CAFile: <string>
+      clusterCAFile: <string>
+      CRLFile: <string>
+      allowConnectionsWithoutCertificates: <boolean>
+      allowInvalidCertificates: <boolean>
+      allowInvalidHostnames: <boolean>
+      disabledProtocols: <string>
+      FIPSMode: <boolean>
+   compression:
+      compressors: <string>
+   serviceExecutor: <string>
+   storage:
+   dbPath: ""
+   indexBuildRetry: true
+   journal:
+      enabled: true # do not set for in memory database
+      commitIntervalMs: 100 # millisecond
+   directoryPerDB: true
+   engine: "wiredTiger"
+   wiredTiger:
+      engineConfig:
+         cacheSizeGB: <number>
+         journalCompressor: "snappy"
+         directoryForIndexes: true
+      collectionConfig:
+         blockCompressor: "snappy"
+      indexConfig:
+         prefixCompression: true
+   inMemory:
+      engineConfig:
+         inMemorySizeGB: <number>
+security:
+  authorization: "enabled"
+  redactClientLogData: false
+  clusterIpSourceWhitelist:
+    - # List all the ipaddresses or CIDR of replica sets and web/app servers
+  ldap:
+    servers: ""
+    bind:
+       method: ""
+       saslMechanisms: ""
+       queryUser: ""
+       queryPassword: ""
+       useOSDefaults: ""
+    transportSecurity: ""
+    timeoutMS: 10000
+    userToDNMapping: ""
+    authz:
+       queryTemplate: ""
+    validateLDAPServerConfig: true
+setParameter:
+  ldapUserCacheInvalidationInterval: 14400
+  ldapConnectionPoolMinimumConnectionsPerHost: 5

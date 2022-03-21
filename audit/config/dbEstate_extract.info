@@ -1,0 +1,130 @@
+dbPlatform -- dbTechnology
+productVariant -- community/enterprise
+dbid -- tenantId
+OriginalBusinessUnit -- opco
+isClustered -- Yes/No
+clusterTechnology -- Mongo RS
+dbType -- Traditional
+DatabaseIdentifierLevel1 -- ClusterName
+DatabaseIdentifierLevel2 -- TenantId
+	HostName -- HostName
+Port -- Port
+isDBActiveOnHost -- Yes
+dbRole -- Primary/Secondary
+patchCompliance -- Compliance/Non Compliance (Previous ver - 6 weeks in compliance)
+Environment --
+	MemoryAllocatedGB --
+	CPUAllocated --
+dbSizeGB -- 
+IsEncAtRest --
+EncTechnique --
+HATechnology
+DRTechnology
+BackupMethodology
+IsExternalFacing -- No
+isNetworkCommunicationEnabled -- TLS/SSL enabled?
+DatabaseTier -- unknown
+AuditCompliance -- (mongo_admin on risk register)
+isDBaaS -- No
+dbaasVendor -- None
+lastChangeDate --
+
+# add dbsize to tenants
+
+pipeline = [
+	{"$match": {"status" : "Active"}},
+	{"$unwind" : {"path" : "$members"}},
+	{"$lookup" : {
+		"from" : "hosts",
+		"localField" : "hostName",
+		"foreignField" : "hostName",
+		"as" : "hostDetails",
+		}
+	},
+	{"$group" : {"_id" : {
+			"dbTechnology" : "$dbTechnology", 
+			"tenantId" : "$members.tenantId",
+			"opco" : "$opco",
+			"instanceType" : "$instanceType", 
+			"env" : "$env",
+			"physMemory" : "$hostdetails.memory.total",
+			"totalCPUs" : "$hostdetails.cpu.count",
+			"isEncAtRest" : "$members.security.enableEncryption",
+			"backupMethodology" : "$backup.method",
+			"isSSLEnabled" : "$members.config.net.tls.mode",
+			"lastChangeDate" : "$scanDate"},
+		"dbSize" : {"$sum" : "$databases.dbs.sizeMB"}
+		}
+	},
+	{"$project" : {
+		"_id" : 0,
+		"dbTechnology" : "$dbTechnology", 
+		"variant" : "Enterprise", 
+		"dbId" : "$tenantId",
+		"opco" : "$opco",
+		"dbType" : "traditional", 
+		"instanceType" : "$instanceType", 
+		"dbRole" : "unknown", 
+		"patchCompliance" : "Compliant",
+		"env" : "$env",
+		"PhysMemory" : "$physMemory",
+		"totalCPUs" : "$totalCPUs",
+		"dbSize" : "$dbSize",
+		"isEncAtRest" : "$isEncAtRest",
+		"encTechnique" : "unknown",
+		"backupMethodology" : "$backupMethodology",
+		"isExternalFacing" : "no",
+		"isSSLEnabled" : "$isSSLEnabled",
+		"databaseTier" : "unknown",
+		"auditCompliance" : "Compliant",
+		"isDBaaS" : "no",
+		"dbaasVendor" : "n/a",
+		"lastChangeDate" : "$lastChangeDate"}
+	}
+]
+
+
+pipeline = [
+	{"$match": {"status" : "Active","_id" : "uat.MARSH.APAC.mongo.LIS_UAT"}},
+	{"$unwind" : {"path" : "$members"}},
+	{"$lookup" : {
+		"from" : "hosts",
+		"localField" : "members.hostName",
+		"foreignField" : "hostName",
+		"as" : "hostDetails",
+		}
+	},
+	{"$unwind" : {"path" : "$hostDetails"}},
+	{"$project" : {
+		"_id" : 1,
+		"dbTechnology" : 1, 
+		"variant" : "Enterprise", 
+		"dbId" : "$tenantId",
+		"opco" : 1,
+		"hostName" : 1,
+		"dbType" : "traditional",
+		"tenantId" : "$members.tenantId",
+		"hostName" : "$members.hostName",
+		"port" : "$members.port",
+		"clusterName" : "$dbCluster",
+		"instanceType" : 1, 
+		"dbRole" : "unknown", 
+		"patchCompliance" : "Compliant",
+		"env" : "$env",
+		"PhysMemoryGB" : {"$round" : [{"$divide" : ["$hostDetails.memory.total", (1024*1024*1024)]}, 0]},
+		"totalCPUs" : "$hostDetails.cpu.count",
+		"dbSize" : "unknown",
+		"isEncAtRest" : "$members.security.enableEncryption",
+		"encTechnique" : "unknown",
+		"backupMethodology" : "$backup.method",
+		"isExternalFacing" : "no",
+		"isSSLEnabled" : "$members.security.enableEncryption",
+		"databaseTier" : "unknown",
+		"auditCompliance" : "Compliant",
+		"isDBaaS" : "no",
+		"dbaasVendor" : "n/a",
+		"lastChangeDate" : "$scanDate"}
+	}
+]
+
+db.tenants.aggregate(pipeline)

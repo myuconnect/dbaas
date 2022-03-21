@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn instance for rest api
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/ansible/app/restapi
+Environment="PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/ansible/.local/bin:/usr/local/bin"
+ExecStart="/opt/ansible/start_gunicorn_restapi.sh"
+ExecStop="/opt/ansible/stop_gunicorn_restapi.sh"
+
+[Install]
+WantedBy=multi-user.target

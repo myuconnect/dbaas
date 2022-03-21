@@ -1,0 +1,21 @@
+// mongo block config is used to connect to local database (password must match with local admin password)
+{
+  "mongo": {
+    "home": "/opt/mongo/bin",
+    "scale" : 1024,
+    "userType" : "internal",
+    "user" : "mongo_admin",
+    "encPass" :  "ZnNkYVRFc3MxMDE=",
+    "authDB" : "admin",
+    "authMech" : "SCRAM-SHA-1",
+    "mongo_admin" : "ZnNkYVRFc3MxMDE="
+  },
+  "postgres" : {
+    "home" : "/opt/postgres/bin",
+    "userType" : "internal",
+    "user" : "postgres",
+    "encPass" : ""
+  },
+  "mysql" : {},
+  "teradata" : {} 
+}

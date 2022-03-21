@@ -1,0 +1,70 @@
+{
+  "categories": [
+    {
+      "category": "opsMgrReport",
+      "opsMgrDetails": [
+        {
+          "region": "APAC",
+          "tag": "apac.onprem",
+          "url": "http://ausy21v0047.mrshmc.com:8080/api/public/v1.0",
+          "userName": "anil.singh1@mmc.com",
+          "apiKey": "c745612d-a884-4edc-a5d5-5a06b3f851eb"
+        },
+        {
+          "region": "NAM",
+          "tag": "nam.onprem",
+          "url": "http://usdf24v0098.mrshmc.com:8080/api/public/v1.0",
+          "userName": "anil.singh@marsh.com",
+          "apiKey": "044588d9-0f46-4e76-9cdf-81bf8ad9f02f"
+        },
+        {
+          "region": "NAM(AWS)",
+          "tag": "nam.aws",
+          "url": "http://internal-mar-pd-lb08-2011873147.us-east-1.elb.amazonaws.com:80/api/public/v1.0",
+          "userName": "Wskchuob",
+          "apiKey": "7adf5387-4214-47d4-8d7d-d0a8b351a4a2"
+        }
+      ]
+    },
+    {
+      "category": "onBoardAdmin",
+      "tasks": [
+        ""
+      ]
+    },
+    {
+      "category": "Global",
+      "exclFSStatsLinux": [
+        "/",
+        "/tmp",
+        "/boot"
+      ]
+    }
+  ],
+  "opco": "MARSH",
+  "env": [],
+  "globalSettings": {
+    "notificationDL": "anil.singh1@mmc.com",
+    "excludeFSStatsLinux": [
+      "/",
+      "/boot",
+      "/tmp",
+      "/var/logs",
+      "/home",
+      "/opt"
+    ],
+    "sysMonitoringUser": {
+      "mongo" : { 
+        "sysUserList": [
+          "__system",
+          "mms-automation",
+          "mms-monitor",
+          "mms-monitoring-agent",
+          "mms-automation-agent",
+          "mms-backup",
+          "mms-backup-agent"
+        ]
+      }
+    }
+  }
+}

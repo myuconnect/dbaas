@@ -1,0 +1,32 @@
+{
+	"dev": {
+		"port" : 8000,
+		"CICD" : {
+			"endPoint" : "/api/cicd/processRequest",
+			"home_loc" : "/opt/ansible/app/cicd",
+			"log_loc" : "/opt/ansible/app/cicd/log",
+			"config_loc" : "/opt/ansible/app/cicd/config"
+		},
+		"AUDIT" : {
+			"endPoint" : "/api/audit/processRequest",
+			"home_loc" : "/opt/ansible/app/audit",
+			"log_loc" : "/opt/ansible/app/audit/log",
+			"config_loc" : "/opt/ansible/app/audit/config"
+		}
+	},
+	"prod": {
+		"port" : 8000,
+		"CICD" : {
+			"endPoint" : "/api/cicd/processRequest",
+			"home_loc" : "/opt/ansible/app/cicd",
+			"log_loc" : "/opt/ansible/app/cicd/log",
+			"config_loc" : "/opt/ansible/app/cicd/config"
+		},
+		"AUDIT" : {
+			"endPoint" : "/api/audit/processRequest",
+			"home_loc" : "/opt/ansible/app/audit",
+			"log_loc" : "/opt/ansible/app/audit/log",
+			"config_loc" : "/opt/ansible/app/audit/config"
+		}
+	}
+}

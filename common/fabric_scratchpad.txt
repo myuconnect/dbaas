@@ -1,0 +1,57 @@
+Installing collected packages: pynacl, bcrypt, paramiko, invoke, fabric
+  WARNING: The scripts inv and invoke are installed in '/opt/ansible/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script fab is installed in '/opt/ansible/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed bcrypt-3.1.7 fabric-2.5.0 invoke-1.4.1 paramiko-2.7.1 pynacl-1.3.0
+ansible@usdfw21as383v:/opt/ansible> $ ls -altr .local/bin
+total 24
+-rwxr-xr-x 1 ansible ansible 400 Feb 19 12:23 UTscapy
+-rwxr-xr-x 1 ansible ansible 396 Feb 19 12:23 scapy
+drwx------ 5 ansible ansible  41 Feb 19 12:23 ..
+-rwxr-xr-x 1 ansible ansible 406 Feb 19 12:44 lanscan
+-rwxr-xr-x 1 ansible ansible 244 Feb 28 12:49 inv
+-rwxr-xr-x 1 ansible ansible 244 Feb 28 12:49 invoke
+-rwxr-xr-x 1 ansible ansible 244 Feb 28 12:49 fab
+drwxr-xr-x 2 ansible ansible  85 Feb 28 12:49 .
+ansible@usdfw21as383v:/opt/ansible> $
+
+http://docs.fabfile.org/en/2.5/api/connection.html#connect-kwargs-arg
+http://docs.fabfile.org/en/2.5/concepts/configuration.html#ssh-config
+
+>>> from fabric import Connection
+>>> conn = Connection('usdf23v0355',user="u1167965",port=22,connect_kwargs={"password":"*******"})
+>>> result = conn.run('uname -a')
+Linux usdf23v0355 3.10.0-1062.12.1.el7.x86_64 #1 SMP Thu Dec 12 06:44:49 EST 2019 x86_64 x86_64 x86_64 GNU/Linux
+>>> result.exited
+0
+>>> result.ok
+True
+>>> result.stdout
+'Linux usdf23v0355 3.10.0-1062.12.1.el7.x86_64 #1 SMP Thu Dec 12 06:44:49 EST 2019 x86_64 x86_64 x86_64 GNU/Linux\n'
+>>> result.stdout.strip()
+'Linux usdf23v0355 3.10.0-1062.12.1.el7.x86_64 #1 SMP Thu Dec 12 06:44:49 EST 2019 x86_64 x86_64 x86_64 GNU/Linux'
+>>>
+
+# sudo
+>>> from invoke import Responder
+>>> sudopass = Responder(pattern=r'\[sudo\] password:',response='mypassword\n',)
+>>> conn.run('sudo whoami', pty=True, watchers=[sudopass])
+(AD: corp.mmco.int) Password:
+Sent Mobile Authenticator request to your device. Please follow the instructions to proceed with authentication or enter verification code here. After that, please press <enter> to finish authentication:
+root
+<Result cmd='sudo whoami' exited=0>
+>>> conn.run('ansd -iu mongo', pty=True, watchers=[sudopass])
+(AD: corp.mmco.int) Password:
+/home/mongo
+mongo@usdf23v0355:/home/mongo> $ ls
+backup.log  build.py  dead.letter  dump  user_admin.csv  x
+mongo@usdf23v0355:/home/mongo> $ exit
+<Result cmd='ansd -iu mongo' exited=0>
+>>> conn.run('ansd -iu mongo', pty=True, watchers=[sudopass])
+(AD: corp.mmco.int) Password:
+/home/mongo
+mongo@usdf23v0355:/home/mongo> $ exit
+<Result cmd='ansd -iu mongo' exited=0>
+>>>
+

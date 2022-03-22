@@ -13,8 +13,8 @@ myHeaders = {'Content-Type': 'application/json'}
 myURL = "http://usdfw21as383v:8000/api/audit/processRequest"
 myArguments =  {
 	"method" : "getDBEstateDecomData",
-	"userId" : "mgd\\U1195200_app",
-	"apiKey" : "8SdgfrTAQ6qwiyu32--IuvJ8uWIkWbSb-j8lv6aGGcxEp5mAPNQHgg44l5zsTVxvVoh7RduYZMK2WhPvw",
+	"userId" : "",
+	"apiKey" : "",
 	"args" : {}
 }
 myResponse = post(myURL, headers=myHeaders, json=myArguments)

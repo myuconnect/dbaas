@@ -1,0 +1,424 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Tenant Details - {{tenant._id}})
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    {% if (tenant is defined) and tenant %}
+        <form action="{{ url_for('view_tenant', tenantName = tenant._id) }}" method="POST">
+            <div class="row border border-left-1 border-light border-3 col ms-3 me-3 mt-2">
+                <div class="col col-xs-2 order-1 mb-2 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend></legend>
+                        <h6><span class="label label-default form-control-md" for ="tenant_id" >DB&nbsp;Cluster&nbsp;Id</span></h6>
+                        <input class="form-control form-control-md" type="text" id="tenant_id" name="tenant_id" value = "{{tenant._id}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">DB&nbspCluster</span></h6>
+                        <input class="form-control form-control-md" type="text" id="cluster_name" name="cluster_name" value = "{{tenant.dbCluster}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Cluster&nbsp;Type</span></h6>
+                        <input class="form-control form-control-md" type="text" id="instance_type" name="instance_type" value = "{{tenant.instanceType}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Status</span></h6>
+                        {% if tenant.status == "Active" %}
+                            <input class="form-control form-control-md bg-success text-white" type="text" id="status" name="status" value = "{{tenant.status}}" readonly disabled>
+                        {% else %}
+                            <input class="form-control form-control-md bg-danger text-white" type="text" id="status" name="status" value = "{{tenant.status}}" readonly disabled>
+                        {% endif %}
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md">Opco</span></h6>
+                        <input class="form-control form-control-md" type="text" id="opco" name="opco" value = "{{tenant.opco}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Region</span></h6>
+                        <input class="form-control form-control-md" type="text" id="region" name="region" value = "{{tenant.region}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Environment</span></h6>
+                        <input class="form-control form-control-md" type="text" id="env" name="env" value = "{{tenant.env.upper()}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Docker</span></h6>
+                        <input class="form-control form-control-md" type="text" id="docker" name="docker" value = "{{tenant.docker}}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-3 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md">Version</span></h6>
+                        <input class="form-control form-control-md" type="text" id="version" name="version" value = "{{tenant.version}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Created</span></h6>
+                        <input class="form-control form-control-md" type="text" id="createdTS" name="createdTS" value ="{{tenant.createdTS}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Last&nbsp;Updated</span></h6>
+                        <input class="form-control form-control-md" type="text" id="lastUpdatedTS" name="lastUpdatedTS" value ="{{tenant.lastUpdatedTS}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Other</span></h6>
+                        <input class="form-control form-control-md" type="text" id="other" name="other" value ="<other element>" readonly disabled>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+
+        <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pills-members-tab" data-bs-toggle="pill" data-bs-target="#pills-members" type="button" role="tab" aria-controls="pills-members" aria-selected="true">Member (HA)</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-db-tab" data-bs-toggle="pill" data-bs-target="#pills-db" type="button" role="tab" aria-controls="pills-db" aria-selected="false">Database</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-roles-tab" data-bs-toggle="pill" data-bs-target="#pills-roles" type="button" role="tab" aria-controls="pills-roles" aria-selected="false">Roles</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-users-tab" data-bs-toggle="pill" data-bs-target="#pills-users" type="button" role="tab" aria-controls="pills-users" aria-selected="false">Users</button>
+            </li>
+            {% if tenant.instanceType in ["mongo.rs"] %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-cluster-tab" data-bs-toggle="pill" data-bs-target="#pills-cluster" type="button" role="tab" aria-controls="pills-cluster" aria-selected="false">Cluster Details</button>
+                </li>
+            {% endif %}
+            {% if tenant.env == "prod" %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-dr-tab" data-bs-toggle="pill" data-bs-target="#pills-dr" type="button" role="tab" aria-controls="pills-dr" aria-selected="false">DR</button>
+                </li>
+            {% endif %}
+            <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-comp-tab" data-bs-toggle="pill" data-bs-target="#pills-comp" type="button" role="tab" aria-controls="pills-comp" aria-selected="false">Compliance</button>
+            </li>
+            <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab" aria-controls="pills-history" aria-selected="false">History</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade" id="pills-db" role="tabpanel" aria-labelledby="pills-db-tab">
+                {% if 'databases' in tenant and tenant.databases is defined and tenant.databases %}
+                    <table id="dbTable" class="table table-sm table-striped table-bordered table-stripped table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in tenant.databases.headings %}
+                                    <th> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in tenant.databases.data %}
+                                <tr class="clickable-row" data-href="tenant">
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        $('#dbTable').DataTable();
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="pills-roles" role="tabpanel" aria-labelledby="pills-roles-tab">
+                {% if 'roles' in tenant and tenant.roles is defined and tenant.roles %}
+                    <table id="roleTable" class="table table-sm table-striped table-bordered table-stripped table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in tenant.roles.headings %}
+                                    <th> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in tenant.roles.data %}
+                                <tr class="clickable-row">
+                                    {% for cell in row %}
+                                        {% if loop.index == 5 %}
+                                            <td class="text-wrap" style="cursor:default"> {{ cell }} </td>
+                                        {% else %}
+                                            <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>                                    
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        $('#roleTable').DataTable();
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="pills-users" role="tabpanel" aria-labelledby="pills-users-tab">
+                {% if 'users' in tenant and tenant.users is defined and tenant.users%}
+                    <table id="userTable" class="table table-sm table-striped table-bordered table-stripped table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in tenant.users.headings %}
+                                    <th data-sortable="true"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in tenant.users.data %}
+                                <tr class="clickable-row" data-href="tenant">
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        $('#userTable').DataTable();
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            {% if tenant.instanceType == 'mongo.rs' %}
+                <div class="tab-pane fade" id="pills-cluster" role="tabpanel" aria-labelledby="pills-cluster-tab">
+                    <!--<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="resize: none" readonly disabled>
+                    </textarea> -->
+                    {% if 'cluster' in tenant and tenant.cluster is defined %}
+                        <table id="clusterTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    <!--<th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th> -->
+                                    {% for header in tenant.cluster.clusterMemberHeading %}
+                                        <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% for row in tenant.cluster.clusterMemberData %}
+                                    <tr>
+                                        <!--
+                                        <td  class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                            <span class="btn btn-outline-secondary btn-sm btn-view-tenantMember" role="button">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </td>
+                                        -->
+                                        {% for cell in row %}
+                                            <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>                    
+                        <!-- we need to print 1 line in block for setting and then displat member config as table data-->
+                    {% else %}
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <div class="tab-pane fade show active" id="pills-members" role="tabpanel" aria-labelledby="pills-members-tab">
+                {% if 'members' in tenant and tenant.members is defined and tenant.members %}
+                    <div id="member_data" class="container-fluid">
+                    <table id="memberTable" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th>
+                                {% for header in tenant.members.headings %}
+                                    <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in tenant.members.data %}
+                                <tr>
+                                    <td  class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                        <span class="btn btn-outline-secondary btn-sm btn-view-tenantMember" role="button">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </td>
+                                    {% for cell in row %}
+                                        {% if cell|upper == "ACTIVE" %}
+                                            <td class="text-nowrap bg-success" style="cursor:default"> {{ cell }} </td>
+                                        {% elif cell|upper == "INACTIVE" or cell|upper == "IN-ACTIVE" %}
+                                            <td class="text-nowrap bg-danger" style="cursor:default"> {{ cell }} </td>
+                                        {% else %}
+                                            <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+                <script>
+                    $('#memberTable').DataTable();
+
+                    $(document).on('click',".btn-view-tenantMember", function(e){
+                        var currentRow = $(this).closest('tr')
+                        var currentRow=$(this).closest("tr");
+                        var tenantMemberId = currentRow.find("td:eq(1)").text(); // get the qst cell value
+                        //alert("view tenant " + tenantMemberId);
+                        var request = $.ajax({
+                            url: '/processAjaxReq',
+                            data: JSON.stringify({"endPoint" : "viewTenantMember", "args" : {"tenantMemberId": tenantMemberId}}),
+                            contentType: "application/json; charset=utf-8",
+                            //dataType: "json",
+                            type: 'POST'
+                        });
+                        request.done(function(response) {
+                            //window.location.href="/host.html";
+                            if(response){
+                                console.log(response);
+                                window.location.href=response.redirect;
+                            }
+                            //$('#response').text(JSON.stringify(response)); 
+                        });
+                        request.fail(function(jqXHR, textStatus, errorThrown) {
+                            console.warn(jqXHR.responseText)
+                            console.log(JSON.stringify(jqXHR));
+                            console.log( "Request failed: " + textStatus + errorThrown);
+                        });
+                        click.stopPropagation();
+                        click.preventDefault();
+                    });
+                    /*
+                    $('#memberTable tbody').on("click", "tr", function(click){
+                        var data = table.row( this ).data();
+                        var currentRow=$(this).closest("tr");
+                        var tenantMemberId = currentRow.find("td:eq(0)").text(); // get the qst cell value
+                        var request = $.ajax({
+                            url: '/processAjaxReq',
+                            data: JSON.stringify({"endPoint" : "viewTenantMember", "args" : {"tenantMemberId": tenantMemberId}}),
+                            contentType: "application/json; charset=utf-8",
+                            //dataType: "json",
+                            type: 'POST'
+                        });
+                        request.done(function(response) {
+                            //window.location.href="/host.html";
+                            if(response){
+                                console.log(response);
+                                if (response.redirect != "#"){
+                                    window.location.href=response.redirect;    
+                                }
+                            }
+                            else {
+                                $('#response').text(JSON.stringify(response));
+                            } 
+                        });
+                        request.fail(function(jqXHR, textStatus, errorThrown) {
+                            console.warn(jqXHR.responseText)
+                            console.log(JSON.stringify(jqXHR));
+                            console.log( "Request failed: " + textStatus + errorThrown);
+                        });
+                        click.stopPropagation();
+                        click.preventDefault();
+                    });
+                    */
+                </script>            
+            </div>
+            {% if tenant.env == "prod" %}
+                <div class="tab-pane fade" id="pills-dr" role="tabpanel" aria-labelledby="pills-dr-tab">
+                    {% if 'drData' in tenant %}
+                        <h1>DR Data</h1>
+                    {% else %}
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <div class="tab-pane fade" id="pills-comp" role="tabpanel" aria-labelledby="pills-comp-tab">
+                {% if 'compliance' in tenant and tenant.compliance is defined and tenant.compliance %}
+                    <!--<h1>Compliance Data</h1> -->
+                        <table id="complianceTable" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    <!--<th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th> -->
+                                    {% for header in tenant.compliance.headings %}
+                                        <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% for row in tenant.compliance.data %}
+                                    <tr>
+                                        {% for cell in row %}
+                                            {% if loop.index == 5 %}
+                                                {% if cell|upper == "COMPLIANT" %}
+                                                    <td class="text-nowrap bg-success" style="cursor:default"> {{ cell }} </td>
+                                                {% elif cell|upper == "AT-RISK" %}
+                                                    <td class="text-nowrap bg-warning" style="cursor:default"> {{ cell }} </td>
+                                                {% elif cell|upper == "NON-COMPLIANT" %}
+                                                    <td class="text-nowrap bg-danger" style="cursor:default"> {{ cell }} </td>
+                                                {% else %}
+                                                    <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                                {% endif %}
+                                            {% else %}
+                                                <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <script>
+                            $('#complianceTable').DataTable();
+                        </script>                        
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+                {% if 'history' in tenant and tenant.history is defined and tenant.history %}
+                    <div id="history_data" class="container-fluid">
+                        <table id="history_table" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% for header in tenant.history.headings %}
+                                        <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% for row in tenant.history.data %}
+                                    <tr>
+                                        {% for cell in row %}
+                                            <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <script>
+                            $('#history_table').DataTable();
+
+                        </script>
+                    </div>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{{url_for('tenants')}}" class="btn btn-lg btn-dark btn-block mt-3" style="float: right;" type="submit" role="button">OK</a>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='missing-data.png')}}" class="img-fluid mt-5" style="width: 300px;">
+            <h1>Data is not available !! </h1>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

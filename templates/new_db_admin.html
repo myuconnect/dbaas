@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC DbaaS - Edit DB Admin
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+    <div class="container">
+        <form id = "newAdmin" method="POST" action = "{{ url_for('new_db_admin' ) }}">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <div class="row border border-left-1 border-primary border-3 col ms-5 me-5 mt-5">
+                <div class = "row no-gutters mx-auto pl-1">
+                    <div>
+                        <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Employee Id:</strong></label>
+                        {{ form.employeeId(class="mt-3 me-3 ms-3", style="width:180px;font-size:18px;", placeholder="New employee id", required="required") }}
+                        <label class="d-inline-block"> </label>
+                        <input type="submit" class="btn btn-primary btn-md" data-bs-toggle="tooltip" data-bs-placement="top" name="action" value="search" title="Search Employee" >
+                    </div>
+                        <div class="col col-sm-5 order-1 mb-2 pb-0">
+                            <fieldset class="mt-2 p-1" style="width:100%">
+                                <h6><span class="label label-default form-control-md"><strong>Network Id</strong></span></h6>
+                                {{form.networkId(class="form-control form-control-md mb-2", id="name", readonly="true", disabled="true")}}
+                                <h6><span class="label label-default form-control-md"><strong>Name</strong></span></h6>
+                                {{form.name(class="form-control form-control-md mb-2", id="name", readonly="true", disabled="true")}}
+                                <h6><span class="label label-default form-control-md"><strong>Email</strong></span></h6>
+                                {{form.email(class="form-control form-control-md mb-2", id="name", readonly="true", disabled="true")}}
+                                <h6><span class="label label-default form-control-md"><strong>Location</strong></span></h6>
+                                {{form.location(class="form-control form-control-md mb-2", id="location", readonly="true", disabled="true")}}
+                                <h6><span class="label label-default form-control-md"><strong>Member of </strong></span></h6>
+                                {{form.memberOf(class="form-control form-control-md mb-2", id="member-of", readonly="true", disabled="true", rows=10)}}
+                            </fieldset>
+                        </div>
+                        <div class="col col-sm-5 order-2 mb-2 pb-0">
+                            <fieldset class="mt-2 p-1" style="width:130%;">
+                                <h6><span class="ms-3 label label-default form-control-md"><strong>Hired Date</strong></span></h6>
+                                {{form.hiredDate(class="ms-3 form-control form-control-md mb-2", id="hired-date", readonly="true", disabled="true")}}
+                                <h6><span class="ms-3 label label-default form-control-md"><strong>DN</strong></span></h6>
+                                {{form.dn(class="ms-3 form-control form-control-md mb-2", id="dn", readonly="true", disabled="true")}}
+                                <h6><span class="ms-3 label label-default form-control-md"><strong>Contact#</strong></span></h6>
+                                {{form.contact(class="ms-3 form-control form-control-md mb-2", id="location", readonly="true", disabled="true")}}
+                                {% if form.validEmployee.data|lower == "yes" %}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>Onboarding Doc (CO#) </strong></span></h6>
+                                    {{form.onBoardingDoc(class="ms-3 form-control form-control-md mb-2", id="onboarding-doc", required="required")}}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>Onboarding Date </strong></span></h6>
+                                    {{form.onBoardingDate(class="ms-3 form-control form-control-md mb-2", id="onboarding-date", required="required")}}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>OPCO </strong></span></h6>
+                                    {{form.opco(class="ms-3 form-control form-control-md mb-2", id="opco", required="required")}}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>Mongo login ids </strong></span></h6>
+                                    {{form.mongoDbLoginIds(class="ms-3 form-control form-control-md mb-2", id="mongo-login-ids", required="required")}}
+                                    <button type = "submit" id="saveDBAdmin" name="action" value="onboard"  class="btn btn-lg btn-primary btn-block mt-3 me-3 ms-3 mb-3" data-toggle="tooltip" data-placement="top" title="Onboard new employee" style="float: right;">Onboard</button>
+                                {% else %}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>Onboarding Doc (CO#) </strong></span></h6>
+                                    {{form.onBoardingDoc(class="ms-3 form-control form-control-md mb-2", id="onboarding-doc", readonly="true", disabled="true")}}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>Onboarding Date </strong></span></h6>
+                                    {{form.onBoardingDate(class="ms-3 form-control form-control-md mb-2", id="onboarding-date", readonly="true", disabled="true")}}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>OPCO </strong></span></h6>
+                                    {{form.opco(class="ms-3 form-control form-control-md mb-2", id="opco", required="required", readonly="true", disabled="true")}}
+                                    <h6><span class="ms-3 label label-default form-control-md"><strong>Mongo login ids </strong></span></h6>
+                                    {{form.mongoDbLoginIds(class="ms-3 form-control form-control-md mb-2", id="mongo-login-ids", readonly="true", disabled="true")}}
+                                    <button type = "submit" id = "saveDBAdmin" class="btn btn-lg btn-primary btn-block mt-3 me-3 ms-3 mb-3" data-toggle="tooltip" data-placement="top" title="Onboard new employee" disabled style="float: right;">Onboard</button>
+                                {% endif %}
+                                <button type = "button" id = "cancel" class="btn btn-lg btn-secondary btn-block mt-3 me-3 ms-3 mb-3" data-toggle="tooltip" data-placement="top" title="Cancel" style="float: right;" onclick="window.location.href='{{ url_for('admin_roster')}}'">Cancel</button> 
+                        </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+    
+{% endblock script %}
+

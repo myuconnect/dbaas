@@ -1,0 +1,449 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS Dashboard
+{% endblock title%}
+
+{% block content %}
+	<form action="{{ url_for('home') }}" method="POST" >
+	    {{ form.csrf_token }}
+	    {{ form.hidden_tag() }}
+	    {% if data is defined and data : %}
+		    <div class="mt-3 ms-3 ">
+		        <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+		        {{ form.opco(style="width:180px;font-size:18px;") }}
+		        <label class="d-inline-block"> </label>
+		        <input type="submit" class="btn btn-primary btn-md" data-bs-toggle="tooltip" data-bs-placement="top" title="Search Hosts" value="Apply">
+		    </div>
+			<div class="mt-3 border border-light border-5" style="width:100%; height:400px" >
+				<legend class="w-auto"><strong>Hosts ({{ data.totalHosts }})</strong></legend>
+				<div class="container ms-2 mt-2 mb-2" style="height:20vh; width:30vw;float:left; position: relative;">
+				    <canvas id="host_loc_bar_chart_1"></canvas>
+				</div>
+				<div class="container ms-3 mt-2 mb-2" style="width:350px;height:350px;float:left; position: relative;">
+				<!--<div class="chart-container"  height:40vh; width:80vw"-->
+				    <canvas id="host_os_pie_chart_1"></canvas>
+				</div>
+				<div class="container ms-3 mt-2 mb-2" style="width:350px;height:350px;float:left; position: relative;">
+				<!--<div class="chart-container"  height:40vh; width:80vw"-->
+				    <canvas id="host_dbtech_pie_chart_1"></canvas>
+				</div>
+				<div class="container ms-3 mt-2 mb-2" style="height:20vh; width:30vw;float:left; position: relative;">
+				    <canvas id="host_storage_line_chart_1"></canvas>
+				</div>
+			</div>
+			<br></br>
+			<div class="mt-3 border border-light border-5" style="width:100%; height:400px" style="display: inline-block;" >
+				<div style="width:100%; height:300px" >
+					<legend class="w-auto"><strong>Databases</strong></legend>
+					<!--
+					<div class="mb-3 ms-3" style="float:left; width:20%; height: 200px;position:relative;">
+					    <table id="eosTable" class="table table-sm table-bordered table-striped" border="1" >
+							<thead class="table-primary">
+								<tr>
+									{% for head in data.eosHeadings %}
+										<th class="text-nowrap" style="text-align:center;">{{head}}</th>
+									{% endfor %}
+								</tr>
+							</thead>
+							<tbody class="table-light">
+								{% for row in data.eosData %}
+									<tr>
+										{% for data in row %}
+											<td class="text-nowrap" style="text-align:center;">{{data}}</td>
+										{% endfor %}
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					-->
+					<div class="mb-3 ms-3" style="float:left; width:20%; height: 200px;position:relative;">
+					    <table id="tenantVerTable" class="table table-sm table-bordered" border="1" >
+					    	<h5><span class="label label-default form-control-md" ><strong>Database Version</strong></span></h5>
+							<thead class="table-primary">
+								<tr>
+									{% for head in data.tenantVerHeadings %}
+										<th class="text-nowrap" style="text-align:center;">{{head}}</th>
+									{% endfor %}
+								</tr>
+							</thead>
+							<tbody class="table-light">
+								{% for row in data.tenantVerData %}
+									<tr>
+										{% if row[2]|length %}
+											{% set myEosDate = row[2] %}
+											<!--{{row[2], today()}} -->
+
+											{% if daysDiff(today(), row[2]) >= 90 %}
+												{% for data in row %}
+													<td class="bg-warning text-nowrap" style="text-align:center;">{{data}}</td>
+												{% endfor %}
+											{% elif today() >= row[2] %}
+												{{data}}
+												{% for data in row %}
+													<td class="bg-danger text-nowrap" style="text-align:center;">{{data}}</td>
+												{% endfor %}
+											{% else %}
+												{{ data }}
+												{% for data in row %}
+													<td class="bg-success text-nowrap" style="text-align:center;">{{data}}</td>
+												{% endfor %}
+											{% endif %}
+										{% else %}
+											{% for data in row %}
+												<td class="bg-success text-nowrap" style="text-align:center;">{{data}}</td>
+											{% endfor %}
+										{% endif %}
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<div class="container ms-5 mt-0 mb-2" style="height:20vh; width:35vw;float:left; position: relative;">
+					    <!--{% if data.mongoLicensingData.label is defined and data.mongoLicensingData.label %} -->
+					    	<canvas id="tenant_mongo_licensing_pie_chart_1"></canvas>
+					    <!-- {% endif %} -->
+					</div>
+					<div class="container ms-5 mt-0 mb-2" style="height:20vh; width:35vw;float:left; position: relative;">
+				    	<canvas id="tenant_compliance_line_chart"></canvas>
+					</div>
+					<!--
+					<div class="container ms-5 mt-0 mb-2" style="height:200px; width:600px;float:left; position: relative;">
+						<h5><span class="label label-default form-control-md" ><strong>Notifications</strong></span></h5>
+						<textarea class="container ms-3 mt-2 mb-2" style="resize:none;" disabled rows="5">{{data.notifications}}</textarea>
+					</div>
+					-->
+				</div>
+			</div>
+			<!--<div class="container mt-5 border border-primary border-3 ms-3" style="width:300px;height:300px; float:left" style="position: relative;">
+				<div class="chart-container"  height:40vh; width:80vw">
+					<canvas id="servers_dc_line_chart" ></canvas>
+				</div>
+			</div>
+			-->
+			<!--
+						black	#000000
+							blue	#0000FF
+							brown	#800000
+							cyan	#00FFFF
+							gray	#808080
+							green	#008000
+							lime	#00FF00
+							magenta	#FF00FF
+							navy	#000080
+							orange	#FF6600
+							pink	#FF00FF
+							purple	#800080
+							red	#FF0000
+							silver	#C0C0C0
+							white	#FFFFFF
+							yellow	#FFFF00							
+			-->
+			<script type="text/javascript">
+				document.getElementById("host_loc_bar_chart_1").addEventListener('click', route_host);
+				document.getElementById("host_os_pie_chart_1").addEventListener('click', route_host);
+				document.getElementById("host_dbtech_pie_chart_1").addEventListener('click', route_host);
+				document.getElementById("host_storage_line_chart_1").addEventListener('click', route_host);
+
+				document.getElementById("tenant_mongo_licensing_pie_chart_1").addEventListener('click', route_host);
+				document.getElementById("tenantVerTable").addEventListener('click', route_host);
+
+				document.getElementById("tenant_compliance_line_chart").addEventListener('click', route_compliance);
+
+				function route_host(){
+					window.location.href = {{ url_for('hosts') }}
+				};
+
+				function route_tenant(){
+					window.location.href = {{ url_for('tenants') }}
+				};
+
+				function route_compliance(){
+					window.location.href = {{ url_for('compliances') }}
+				};
+
+				if ( "{{ form.opco.data }}" == "ALL"){
+					var myOpcoTitle = "All Opco";
+				} else {
+					var myOpcoTitle = "{{ form.opco.data }}";
+				};
+				Chart.defaults.elements.bar.borderWidth = 2;
+				Chart.defaults.elements.borderWidth = [1, 1, 1, 1, 1]
+				new Chart(document.getElementById("host_loc_bar_chart_1"), {
+					type: 'bar',
+					data: {
+						labels: {{ data.hostLocGraphData.label|tojson|safe}},
+						datasets: [{
+							label: "Server count",
+							backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850","#0000FF","#FF00FF"],
+							data: {{ data.hostLocGraphData.data}}
+						}],
+						hoverOffset: 4
+					},
+					options: {
+						plugins:{
+							title: {
+								display: true,
+								text: 'DC Location',
+								font : { size :18}, color : ["#000000"]
+							}
+						}
+					}
+				});
+
+				new Chart(document.getElementById("host_os_pie_chart_1"), {
+					type: 'pie',
+					data: {
+						labels: {{ data.hostVerGraphData.label|tojson|safe}},
+						datasets: [{
+							label: "Server count",
+							backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+							data: {{ data.hostVerGraphData.data }}
+						}],
+						hoverOffset: 4
+					},
+					options: {
+						plugins:{
+							title: {
+								display: true,
+								text: 'OS',
+								font : { size :18}, color : ["#000000"]
+							}
+						}
+					}
+				});
+
+				new Chart(document.getElementById("host_dbtech_pie_chart_1"), {
+					type: 'pie',
+					data: {
+						labels: {{ data.hostDBTechGraphData.label|tojson|safe}},
+						datasets: [{
+							label: "Server count",
+							//backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+							backgroundColor: 'rgb(75, 192, 192)',
+							data: {{ data.hostDBTechGraphData.data }}
+						}],
+						hoverOffset: 4
+					},
+					options: {
+						plugins:{
+							title: {
+								display: true,
+								text: 'DB Technology',
+								font : { size :18}
+							}
+						}
+					}
+				});
+
+				//line chart
+				new Chart(document.getElementById("host_storage_line_chart_1"), {
+					type: 'line',
+					data: {
+						labels: {{ data.hostStroageGrpahData.label|tojson|safe }},
+						// we should prepare datasets in app.py for all opcos
+						datasets: [
+							{
+								data : {{ data.hostStroageGrpahData.data }},
+								//label : '{{ form.opco.data }}',
+								label : myOpcoTitle,
+								borderColor: '#800000',
+								fill: false
+							}
+						],
+						hoverOffset: 4
+					},
+					options: {
+						plugins:{
+							title: {
+								display: true,
+								text: 'Host storage stats (GB)',
+								font : { size :18}, color : ["#000000"]
+							}
+						}
+					}
+				});
+				//Doughnut chart
+				new Chart(document.getElementById("tenant_mongo_licensing_pie_chart_1"), {
+					type: 'bar',
+					data: {
+						labels: {{ data.mongoLicensingData.label|tojson|safe if data.mongoLicensingData.label is defined else []}},
+						datasets: [{
+							label: "Memory (GB)",
+							backgroundColor: ["#c45850","green","blue","#3cba9f","#e8c3b9"],
+							data: {{ data.mongoLicensingData.data if data.mongoLicensingData.data is defined else [] }}
+						}],
+						hoverOffset: 4
+					},
+					options: {
+						plugins:{
+							title: {
+								display: true,
+								text: 'Mongo Licensing - {{ data.totalMongoLicUtilGB|round|int }} GB',
+								font : { size :18}, color : ["#000000"]
+							}
+						}
+					}
+				});
+				// multi axis line chart for compliance
+				/*
+				var data = {
+				    "datasets": [
+				      {
+				        "backgroundColor": "rgb(156, 39, 176)",
+				        "borderColor": "rgb(156, 39, 176)",
+				        "fill": false,
+				        "data": [
+				          10,
+				          120,
+				          80,
+				          134
+				        ],
+				        "id": "amount",
+				        "label": "Purchase amount (USD)",
+								"yAxisID":"left"
+				      },
+				      {
+				        "backgroundColor": "rgb(39, 176, 200)",
+				        "borderColor": "rgb(39, 176, 200)",
+				        "fill": false,
+				        "data": [
+				          300,
+				          -1200,
+				          500,
+				          -340
+				        ],
+				        "id": "amount",
+				        "label": "Purchase amount (USD)",
+								"yAxisID":"right"
+
+				      }
+				    ],
+				    "labels": [
+				      "2017-01-02",
+				      "2017-04-02",
+				      "2017-07-02",
+				      "2018-01-02"
+				    ]
+				  };
+				var options = {
+				    "elements": {
+				      "rectangle": {
+				        "borderWidth": 2
+				      }
+				    },
+				    "layout": {
+				      "padding": 0
+				    },
+				    "legend": {
+				      "display": true,
+				      "labels": {
+				        "boxWidth": 16
+				      }
+				    },
+				    "maintainAspectRatio": false,
+				    "responsive": true,
+				    "scales": {
+				      "xAxes": [
+				        {
+				          "gridLines": {
+				            "display": false
+				          },
+				          "scaleLabel": {
+				            "display": true,
+				            "labelString": "Date"
+				          },
+				          "stacked": false,
+				          "ticks": {
+				            "autoSkip": true,
+				            "beginAtZero": true
+				          },
+				          "time": {
+				            "tooltipFormat": "[Q]Q - YYYY",
+				            "unit": "quarter"
+				          },
+				          "type": "time"
+				        }
+				      ],
+				      "yAxes": [
+				        {
+				          "scaleLabel": {
+				            "display": true,
+				            "labelString": "Purchase amount (USD)"
+				          },
+									"id": "left",
+				          "stacked": false,
+				          "ticks": {
+				            "beginAtZero": true
+				          }
+				        },
+				        {
+				          "scaleLabel": {
+				            "display": true,
+				            "labelString": "Purchase count"
+				          },
+									"id": "right",
+									"position": "right",
+				          "stacked": false,
+				          "ticks": {
+				            "beginAtZero": true
+				          }
+				        }
+				      ]
+				    },
+				    "title": {
+				      "display": false
+				    },
+				    "tooltips": {
+				      "intersect": false,
+				      "mode": "index",
+				      "position": "nearest",
+				      "callbacks": {}
+				    }
+				  }
+				var type = "line";
+				*/
+				//var myChart = new Chart(document.getElementById("tenant_compliance_line_chart").getContext('2d'), {options, data, type});
+				new Chart(document.getElementById("tenant_compliance_line_chart"), {
+					type : 'line',					
+					data : {
+						labels: {{ data.tenantCompData.label|tojson|safe if data.tenantCompData and data.tenantCompData.data is defined else []}},
+						datasets: [
+							{
+								data : {{ data.tenantCompData.data if data.tenantCompData and data.tenantCompData.data is defined else []}},
+								//label : '{{ form.opco.data }}',
+								label : myOpcoTitle,
+								borderColor: 'orange',
+								fill: false
+							}
+						],
+						hoverOffset: 4
+					},
+					options: {
+						responsive: true,
+						plugins: {
+							legend: {
+								position: 'top',
+							},
+							title: {
+								display: true,
+								text: 'Compliance Chart',
+								font : { size :18}, color : ["#000000"]
+							}
+						}
+					}
+				});
+			</script>
+		{% else %}
+	        <div class="text-center">
+	            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+	        </div>
+		{% endif %}
+	</form>
+{% endblock content%}
+
+<canvas id="line-chart" width="800" height="450"></canvas>

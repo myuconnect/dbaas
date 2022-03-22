@@ -1,0 +1,157 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Bulk Update Pending Compliance Task)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+<div class="container">
+    <div class="row row no-gutters mx-auto pl-1" style="font-size:20px;">
+        {% if form.compTasks is defined and form.compTasks  %}
+            <form class = "horizontol" method="POST" action = "{{ url_for('bulk_update_comp_tasks') }}">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                <div class= "mt-3 row border border-secondary border-2">
+                    <div class="row col mx-auto">
+                        <div class="col col-xs-2 order-1 mb-1 pb-0" style="text-align: left">
+                            <fieldset class="mt-2 p-1" style="width:400px">
+                                <label><strong>Opco</strong></label>
+                                {{form.opco(class="form-control me-5",id="opco-select")}}
+                                <label><strong>Region</strong></label>
+                                {{form.region(class="form-control me-5",id="region-select")}}
+                                <label><strong>Environment</strong></label>
+                                {{form.env(class="form-control me-5",id="env-select")}}
+                            </fieldset>
+                        </div>
+                        <div class="col col-xs-2 order-2 mb-1 pb-0" style="">
+                            <fieldset class="mt-2 p-1" style="width:400px">
+                                <label class="mt-3 me-1"for="dbTechnology"><strong>DB Technology</strong></label>
+                                {{ form.dbTechnology(class="form-control form-control-md",id="db-tech-select") }}
+                                <label class="inline-block mt-3 me-1" for="compTask" ><strong>Compliance:</strong></label>
+                                {{ form.compliance(class="form-control form-control-md required", required="required", id="comp-select") }}
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="mt-3 ms-2 ms-2" for="compTask" ><strong>Compliance Tasks:</strong></label>
+                        {{ form.compTasks(class="form-control form-control-md required", required="required", id="comp-tasks",size="10") }}
+                        <div class="mt-3, me-3, mb-3", style="float: right;">
+                            <strong>{{ form.selectAll.label(class="mt-3, me-3") }}</strong>{{ form.selectAll(id="multi-comp-select") }}
+                        </div>
+                    </div>
+                </div>
+                <div class= "mt-3 row border border-primary border-2">
+                    <div class="row col-md-8 auto-center">
+                        <div class = "row">
+                            <label class="mt-3"><strong>Supporting Doc</strong></label>
+                            <div class="col">
+                                {{form.supportingDoc(class="mt-3 mb-3 form-control form-control-md required",id="supportingDoc", placeholder="CA/CO#")}}
+                            </div>
+                            <div class="col">
+                                {{form.when(class="mt-3 mb-3 form-control form-control-md required",type="date",id="when")}}
+                            </div>
+                            <div class="col">
+                                {{form.tag(class="mt-3 mb-3 form-control form-control-md required",type="text",id="tag", placeholder="Tag")}}
+                            </div>
+                        </div>
+                    </div>
+                    <h6><span class="label label-default form-control-md"><strong>Comments</strong></span></h6>
+                    <div class="row">
+                        <div class="col">
+                            {{form.comments(class="form-control form-control-md textarea ms-1 me-3", required="required", id="comments", rows=5, placeholder="Comments")}}
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        {{ form.submit(class="mt 3 btn btn-lg btn-primary btn-block mb-3", style="float: right;") }}
+                    </div>
+                </div>
+                <script>
+                    $('#multi-comp-select').click(function(event) {   
+                        var compTasks = document.getElementById('comp-tasks');
+                        if(this.checked) {
+                            // Iterate each checkbox
+                            for(var i=0, n=compTasks.length;i<n;i++) {
+                                compTasks[i].selected = true;
+                            }
+                        } else {
+                            for(var i=0, n=compTasks.length;i<n;i++) {
+                                compTasks[i].selected = false;
+                            }
+                        }
+                    });
+
+                    document.getElementById("db-tech-select").addEventListener("change", populateComplianceTasks);
+                    document.getElementById("opco-select").addEventListener("change", populateComplianceTasks);
+                    document.getElementById("region-select").addEventListener("change", populateComplianceTasks);
+                    document.getElementById("env-select").addEventListener("change", populateComplianceTasks);
+                    document.getElementById("comp-select").addEventListener("change", populateComplianceTasks);
+
+                    function populateComplianceTasks(){
+                        var opco = document.getElementById("opco-select").value;
+                        var region = document.getElementById("region-select").value;
+                        var env = document.getElementById("env-select").value;
+                        var dbTechnology = document.getElementById("db-tech-select").value;
+                        var compliance = document.getElementById("comp-select").value;
+                        var compTasks = document.getElementById("comp-tasks");                                
+                        var compStatus = "Pending";
+                        var request = $.ajax({
+                            url: '/processAjaxReq',
+                            data: JSON.stringify({"endPoint" : "getCompTasks", "args" : {"opco": opco, "region" : region, "env" : env, "dbTechnology" : dbTechnology, "compliance" : compliance, "status" : compStatus} } ),
+                            contentType: "application/json; charset=utf-8",
+                            //dataType: "json",
+                            type: 'POST'
+                        });
+                        //alert(request);
+                        request.done(function(response) {
+                            //window.location.href="/host.html";
+                            console.log(response);
+                            if(response){
+                                console.log(response);
+                                console.log(JSON.stringify(response));
+                                console.table(JSON.stringify(response));
+                                var optionHTML = "";
+                                if (response.length != 0){
+                                    for (i = 0; i < response.length; i++){
+                                        optionHTML += '<option value=' + response[i].id+ ">" + response[i].value + '</option>'
+                                    };
+                                };
+                                //alert("option html "+ optionHTML)
+                                if (optionHTML){
+                                    compTasks.innerHTML = optionHTML;
+                                    compTasks.selectedIndex = 0;
+                                }else{
+                                    //alert("optionHTML is null")
+                                    // disabling the field since we dont have any database available for tech selected by user
+                                    compTasks.innerHTML = "                 ";
+                                };
+                                console.log("optionHtml >>> " + optionHTML);
+                                console.log("compTasksSelect >>> " + compTasks);    
+
+                                //window.location.href=response.redirect;
+                            };
+                            //$('#response').text(JSON.stringify(response)); 
+                        });
+                        request.fail(function(jqXHR, textStatus, errorThrown) {
+                            console.warn(jqXHR.responseText)
+                            console.log(JSON.stringify(jqXHR));
+                            console.log( "Request failed: " + textStatus + errorThrown);
+                            compTasks.innerHTML = "                            ";
+                        });
+                    };
+                </script>                        
+            </form>
+        {% else %}
+            <div class="text-center">
+                <img src="{{ url_for('static', filename='missing-data.png')}}" class="img-fluid mt-5" style="width: 300px;">
+                <h1>No pending compliance task is available for modification !! </h1>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+{% endblock script %}

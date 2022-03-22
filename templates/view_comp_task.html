@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (View Compliance Task - {{comp._id}})
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    {% if (comp is defined) and comp %}
+        <form action="{{ url_for('view_comp_task', compTaskId = comp._id ) }}" method="POST">
+            <div class="row border border-left-1 border-light border-3 col ms-3 me-3 mt-2">
+                <div class="col col-xs-2 order-1 mb-2 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend></legend>
+                        <h6><span class="label label-default form-control-md" for ="opco" ><strong>OPCO</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="opco" name="opco" value = "{{comp.opco}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Region</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="region" name="region" value = "{{comp.region}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Environment</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="env" name="env" value = "{{comp.env.upper()}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Status</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="status" name="status" value = "{{comp.status}}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md"><strong>Task</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="task" name="task" value = "{{comp.task}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Frequency</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="frequency" name="frequency" value = "{{comp.frequency}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Supporting DOC</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="supportingDoc" name="supportingDoc" value = "{{comp.supportingDoc}} @ {{comp.when}}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-3 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md"><strong>DB Technology</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="dbTechnology" name="dbTechnology" value = "{{comp.dbTechnology.upper()}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Database</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="tenantName" name="tenantName" value = "{{comp.tenantName}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Tag</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="comments" name="comments" value = "{{comp.comments}}" readonly disabled>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+
+        <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab" aria-controls="pills-history" aria-selected="true">History</button>
+          </li>
+        </ul>
+        <div class="tab-pane fade show active" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+            {% if 'historyData' in comp %}
+                <div id="history" class="container-fluid">
+                    <table id="histTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in comp.historyHeadings %}
+                                    <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in comp.historyData %}
+                                <tr>
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                </div>
+            {% endif %}
+            <script>
+                $('#histTable').DataTable();
+
+            </script>            
+        </div>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='missing-data.png')}}" class="img-fluid mt-5" style="width: 300px;">
+            <h1>Data is missing !! </h1>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

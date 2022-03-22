@@ -1,0 +1,202 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css')}}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Edit Database Attribute - {{form.tenantName}})
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    {% if (form is defined) and form %}
+        <form class="col-lg-5 offset-lg-3" id="edit-tenant-form" method="POST" action = "{{ url_for('edit_tenant', tenantName = form.tenantName.data) }}">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <div class="modal fade" id="decom_tenant_modal" tabindex="-1" role="dialog" aria-labelledby="decomTenant" aria-hidden="true">
+                <div class="modal-dialog " role = "document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="decomTenantTitle">Decom Host</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div class="mt-3 modal-body">
+                            <!--<div class="col" style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+                                <label ><strong>Host:</strong></label>
+}}                                
+                            </div> -->
+                            <!--<br></br> -->
+                            <!--<label ><strong>Decom Doc (CA/CO#) :</strong></label> -->
+                            {{ form.tenantName(id="modal-decom-tenant-name", class="form-control form-control-md disabled", readonly=true)}}
+                            {{form.decomDoc(id="modal-decom-doc", class="mt-3 form-control-md", required='required', placeholder="CA/CO#", size=30)}}
+                            <!-- <label ><strong>Decom Date : </strong></label> -->
+                            {{form.decomDate(id="modal-decom-date",class="mt-3 form-control-md", required='required', type="date")}}
+                            <!--<label ><strong>Comments</strong></label> -->
+                            {{form.decomComments(id="modal-decom-comments",class="mt-3 form-control-md", required='required', size=55, placeholder="Comments")}}
+                        </div>
+                        <div class="modal-footer">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger" id="decomTenantSubmit" data-toggle="modal" data-bs-dismiss="modal" >Decom</button>
+                            </div>
+                        </div>
+                        <script>
+                            $( document ).ready(function() {
+                                    $('#decomTenantSubmit').click(function(func) {
+                                        //alert("submit");
+                                        /* when the button in the form, display the entered values in the modal */
+                                        //alert("processing off boarding admin tech");
+                                        //performing ajax call to offboard the db admin technology
+                                        //var employeeId = document.getElementById("modal_offboard_admin_employee_id").innerText;
+                                        var tenantName = document.getElementById("modal-decom-tenant-name").value;
+                                        var decomDoc = document.getElementById("modal-decom-doc").value;
+                                        var decomDate = document.getElementById("modal-decom-date").value;
+                                        var decomComments = document.getElementById("modal-decom-comments").value;
+                                        //alert("decom tenant " + tenantName + decomDoc + decomDate + decomComments);
+                                        // changing hidden field value to empty, if form is submitted we will not save change unless save button is clicked
+                                        //document.getElementById("saveChanges").value = "";
+
+                                        if (!decomDoc){
+                                            alert("Pls enter decom doc")
+                                            throw ("Pls provide decom doc");
+                                        };
+                                        var response = $.ajax({
+                                            url: '/processAjaxReq',
+                                            data: JSON.stringify({"endPoint" : "decomTenant", "args" : {"tenantName": tenantName, "decomDoc" : decomDoc, "decomDate" : decomDate, "comments" : decomComments}}),
+                                            contentType: "application/json; charset=utf-8",
+                                            type: 'POST'
+                                        });
+                                        console.log("ajax response >>>" + response)
+                                        response.done(function(response) {
+                                            //window.location.href="/host.html";
+                                            if(response){
+                                                console.log(response);
+                                                // we want to post the submit to main form
+                                                //document.getElementById("edit-tenant-form").submit();
+                                                //alert("form response " + response);
+                                                window.location.href=response.redirect;
+                                            }
+                                            //$('#response').text(JSON.stringify(response)); 
+                                        });
+                                        response.fail(function(jqXHR, textStatus, errorThrown) {
+                                            console.warn(jqXHR.responseText)
+                                            console.log(JSON.stringify(jqXHR));
+                                            console.log( "Request failed: " + textStatus + errorThrown);
+                                            //document.getElementById("editAdmin").submit();
+                                        });
+                                        func.stopPropagation();
+                                        func.preventDefault();
+                                    });
+                                });
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <div class="border border-light border-3 mt-3 row g-3 align-items-center">
+                <!--
+                <div class="mb-3">
+                    <div class="col-auto">
+                        <label for="Host Name" class="col-form-label">Host Name</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="tetx" id="host_name" class="form-control form_contol-lg" aria-describedby="hostNameHelpLine" value={{form.hostName}} >
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="col-auto">
+                        <label for="Host Name" class="col-form-label">Opco</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="tetx" id="host_name" class="form-control form_contol-lg" aria-describedby="opcoHelpLine" value={{form.opco}}>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <span id="opcoHelpline" class="form-text">
+                        Must be 8-20 characters long.
+                    </span>
+                </div>
+            </div>
+            -->
+
+            <div class="row g-3 border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+                <div class="align-items-center" style="justify-content: center">
+                    <!--<label class="col-sm-2 col-form-label" for="fname">OPCO:</label> -->
+                    <!-- <label class = "col-sm-2 col-form-label" for="fname">OPCO</label> -->
+                    <!-- <div class="form-group mt-3" style="display:flex; flex-direction: row;"> </div> This is to displau lable and text in same row -->
+                    <h6><span class="label label-default form-control-md"><strong>Tenant Name</strong></span></h6>
+                    {{ form.tenantName(class="form-control form-control-md mb-3", readonly=true, disabled=true, id="tenantName") }}
+                    <h6><span class="label label-default form-control-md"><strong>Environment</strong></span></h6>
+                    {{ form.env(class="form-control form-control-md mb-3", readonly=true, disabled=true, id="env") }}
+                    <h6><span class="label label-default form-control-md"><strong>HA</strong></span></h6>
+                    {{ form.haMethod(class="form-control form-control-md mb-3 required", id="haMethod") }}
+                    <div class="d-inline-block">
+                        <h6><span class="label label-default form-control-md"><strong>Backup</strong></span></h6>
+                        {{ form.backupMethod(class="form-control form-control-md mt-1 mb-3 required", id="backupMethod", style="max-width:100%;") }}
+                    </div>
+                    <div class="d-inline-block">
+                        {{ form.backupServers(class="form-control form-control-md mt-1 mb-3 required", id="backupServers", size="73", placeholder="Backup servers (seperated by comma)") }}
+                    </div>
+                    {% if form.env.data.upper() == "PROD" %}
+                        <div class="d-inline-block">
+                            <h6><span class="label label-default form-control-md"><strong>DR</strong></span></h6>
+                            {{ form.drMethod(class="form-control form-control-md mb-3 required", id="drMethod", required="required") }}
+                        </div>
+                        <div class="d-inline-block">
+                            {{ form.drServers(class="form-control form-control-md mb-3 required", id="drServers", required="required",placeholder="Comma seperated dr servers", placeholder="DR servers (seperated by comma)", size="73") }}
+                        </div>                       
+                    {% endif %}
+                    <h6><span class="label label-default form-control-md"><strong>URI</strong></span></h6>
+                    {{ form.uri(class="form-control form-control-md mb-3 required", id="uri") }}
+                    <h6><span class="label label-default form-control-md"><strong>License required</strong></span></h6>
+                    {{form.licensingNeeded(class="form-control form-control-md mb-3 required", id="licensingNeeded")}}
+                    <h6><span class="label label-default form-control-md"><strong>Usage</strong></span></h6>
+                    {{ form.usage(class="form-control form-control-md mb-3 required", id="usage") }}
+                    {{ form.dedicatedFor(class="form-control form-control-md mb-3", type="text", style="display:none", id="dedicatedFor", placeholder="Dedicated for") }}
+                    {{ form.comments(class="form-control form-control-md mb-3", type="text", id="comments", placeholder="Comments") }}
+                    <button class="btn btn-lg btn-danger btn-block ms-3 mb-3" style="float: right;" data-bs-toggle="modal" data-bs-target="#decom_tenant_modal">Decomm</button>
+                    <button type="submit" class="btn btn-lg btn-primary btn-block mb-3" id="save_button" disabled=true, style="float: right;">Save Changes</button>                    
+                </div>
+            </div>
+            <script type="text/javascript">
+                $( document ).ready(function() {
+                    document.getElementById("haMethod").addEventListener('change',enableSave);
+                    {% if form.env.data|upper == "PROD" %}
+                        document.getElementById("drMethod").addEventListener('change',enableSave);
+                        document.getElementById("drServers").addEventListener('change',enableSave);
+                    {% endif %}
+                    document.getElementById("uri").addEventListener('change',enableSave);
+                    //document.getElementById("dedicatedFor").addEventListener('change',enableSave);
+                    document.getElementById("licensingNeeded").addEventListener('change',enableSave);
+                    document.getElementById("usage").addEventListener('change',enableSave);
+                    var saveButton = document.getElementById("save_button");
+                    function enableSave(func){
+                        //alert("enablesave " + saveButton.disabled);
+                        saveButton.disabled = false;
+                        //alert("enablesave " + saveButton.disabled);
+                        if (document.getElementById("usage").value.toUpperCase() == "DEDICATED"){
+                            document.getElementById("dedicatedFor").style.display="block";
+                        } else {
+                            document.getElementById("dedicatedFor").style.display="none";
+                        } ;
+                    };
+                    $('#save_button').click(function(func) {
+                       document.getElementById("edit-tenant-form").submit();
+                        func.stopPropagation();
+                        func.preventDefault();
+                    });
+                });
+            </script>
+        </form>
+        <!-- tab -->
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+        </div>
+    {% endif %}               
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

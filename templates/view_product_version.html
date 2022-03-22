@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    {% if (data is defined) and data %}
+        <form action="{{ url_for('view_product_version', dbTechnology = data.header.dbTechnology, version = data.header.baseVersion ) }}" method="POST">
+            <label class="me-5 d-inline-block" style='float: right;'>
+                <!--<button class="btn btn-outline-primary btn-md"><i class="fas fa-plus-square"></i></button>-->
+                <a href="{{ url_for('new_product_version') }}" class="btn btn-outline-primary btn-md" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="New product version"><i class="fas fa-plus-square"></i></a>
+            </label>
+            
+            <div class="row border border-left-1 border-light border-3 col ms-3 me-3 mt-2">
+                <div class="col col-xs-2 order-1 mb-2 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend></legend>
+                        <h6><span class="label label-default form-control-md" for ="dbTechnology" ><strong>DB Technology</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="dbTechnology" name="dbTechnology" value = "{{data.header.dbTechnology}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Base Version</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="baseVersion" name="baseVertsion" value = "{{data.header.baseVersion}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Relased Date</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="baseVerReleasedDate" name="env" value = "{{data.header.baseVerReleasedDate}}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md"><strong>Current Version</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="currentVersion" name="currentVersion" value = "{{data.header.currentVersion}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Released Date</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="currVerReleasedDate" name="currVerReleasedDate" value = "{{data.header.currVerReleasedDate}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>EOL/EOS</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="eoseol" name="eoseol" value = "{{data.header.eol}} {{data.header.eos}}" readonly disabled>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+
+        <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-version-tab" data-bs-toggle="pill" data-bs-target="#pills-version" type="button" role="tab" aria-controls="pills-version" aria-selected="true">Versions</button>
+          </li>
+        </ul>
+        <div class="tab-pane fade show active" id="pills-version" role="tabpanel" aria-labelledby="pills-version-tab">
+            {% if 'versionData' in data %}
+                <div id="version" class="container-fluid">
+                    <table id="histTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in data.versionHeadings %}
+                                    <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in data.versionData %}
+                                <tr>
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='missing-data.png')}}" class="img-fluid mt-5" style="width: 300px;">
+            <h1>Data is missing !! </h1>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

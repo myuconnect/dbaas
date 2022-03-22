@@ -1,0 +1,308 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Complaince Report)
+{% endblock title%}
+
+{% block content %}
+<div class="container mt-5 border border-primary border-3">
+    <div class="row">
+        <div class="mt-3 mb-3">
+			<div class="accordion accordion-flush" id="accordionFlushCompReport">
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingAuditReport">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne"><strong>Audit Report</strong></button>
+					</h2>
+					<div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingAuditReport" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Generates report for all auditable action recorded in the database for a given OPCO/DBTechnology/Environment/Duration
+							<form method="POST" action = "{{ url_for('comp_report') }}">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+								<div class="col col-xs-2 order-1 mb-1 pb-0">
+									<fieldset class="mt-2 p-1" style="width:400px">
+										<h6 class="mt-2" align="left"><span class="mt-2 p-2 label label-default form-control-lg"><strong>Opco</strong></span></h6>
+										<p>{{form.opco(class="form-control form-control-md", size=1)}}</p>
+										<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Env</strong></span></h6>
+										{{form.env(class="form-control form-control-md")}}
+										<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>DB Technology</strong></span></h6>
+										{{form.dbTechnology(class="form-control form-control-md")}}
+									</fieldset>
+								</div>
+								<div class="col col-xs-2 order-2 mb-1 pb-0">
+									<fieldset class="mt-2 p-1" style="width:400px">
+										<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Start Date</strong></span></h6>
+										{{form.startDate(class="form-control form-control-md", type="date")}}
+										<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>End Date</strong></span></h6>
+										{{form.endDate(class="form-control form-control-md", type="date")}}
+										{{form.report(type="hidden",value="audit_report")}}
+										{{ form.submit(class="btn btn-primary btn-block mt-5",type="submit", id="audit_submit", style="float: right;" ) }}
+									</fieldset>
+								</div>
+								</div>
+						    </form>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingTwo">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo"><strong>Database Version Compliance Report</strong></button>
+					</h2>
+					<div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Database version compliance report 
+							<form method="POST" action = "{{ url_for('comp_report') }}">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+									<div class="col col-xs-2 order-1 mb-1 pb-0">
+										<fieldset class="mt-2 p-1" style="width:400px">
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Opco</strong></span></h6>
+											{{form.opco(class="form-control form-control-md")}}
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>DB Technology</strong></span></h6>
+											{{form.dbTechnology(class="form-control form-control-md")}}
+											{{form.report(type="hidden",value="dbver_comp_report")}}
+										</fieldset>
+										{{ form.submit(class="btn btn-primary btn-lg btn-block mt-5 mb-3",type="submit", id="dbver_comp_submit", style="float: right;" ) }}
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingThree">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree"><strong>Password Compliance Report</strong></button>
+					</h2>
+					<div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Provides all database user account and its password compliance details
+							<form method="POST" action = "{{ url_for('comp_report') }}">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+									<div class="col col-xs-2 order-1 mb-1 pb-0">
+										<fieldset class="mt-2 p-1" style="width:400px">
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>DB Technology</strong></span></h6>
+											{{form.dbTechnology(class="form-control form-control-md")}}
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Environment</strong></span></h6>
+											{{form.env(class="form-control form-control-md")}}
+											{{form.report(type="hidden",value="passwd_comp_report")}}
+										</fieldset>
+										{{ form.submit(class="btn btn-primary btn-lg btn-block mt-5 mb-3",type="submit", id="passwd_comp_submit", style="float: right;" ) }}
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingFour">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour"><strong>Database Admin Report</strong></button>
+					</h2>
+					<div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Database administrator report along with its status
+							<form id = "dbadmin_report" method="POST" action = "{{ url_for('comp_report') }}" onSubmit="dbadmin_comp_submit.disabled=false; return true;">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+									<div class="col col-xs-2 order-1 mb-1 pb-0">
+										<fieldset class="mt-2 p-1" style="width:400px">
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Opco</strong></span></h6>
+											{{form.opco(class="form-control form-control-md")}}
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>DB Technology</strong></span></h6>
+											{{form.dbTechnology(class="form-control form-control-md")}}
+											{{form.report(type="hidden",value="dbadmin_comp_report")}}
+										</fieldset>
+										{{ form.submit(class="btn btn-primary btn-lg btn-block mt-5 mb-3",type="submit", id="dbadmin_comp_submit", style="float: right;" ) }}
+									</div>
+								</div>								
+							</form>
+							<!--
+							<script type="text/javascript">
+								$(document).ready(function(){
+									$("input[type='submit']").attr("disabled", false);
+									$("form").submit(function(){
+										$("input[type='submit']").attr("disabled", true).val("Processing ...");
+										//return true;
+									})
+								})
+							</script>
+							<script type="text/javascript">
+							    var form = $('#dbadmin_report');
+							    form.submit(function (e) {
+							        e.preventDefault();
+							        $("input[type='submit']").attr("disabled", true).val("Processing ...");
+							        $.ajax({
+							            type: form.attr('method'),
+							            url: form.attr('action'),
+							            data: form.serialize(),
+							            success: function (data) {
+							            	$("input[type='submit']").attr("disabled", false).val("Genereate Report");
+							                console.log('Submission was successful.');
+							                console.log('response ' + data);
+							                var download = document.getElementById("download");
+							                download.disabled=false;
+							                download.href=data+" download";
+							                //var currentLocation = window.location;
+							                //var redirect="/downloadFile/"+data;
+							            	//window.location.href=data;
+							            	//window.location.href=currentLocation;
+							            },
+							            error: function (data) {
+							            	$("input[type='submit']").attr("disabled", false).val("Genereate Report");
+							                console.log('An error occurred.' + data);
+							                console.log(data);
+							            },
+							        });
+							    });
+							</script>
+							-->
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingFive">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive"><strong>Monitoring Tools Admin Report</strong></button>
+					</h2>
+					<div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Provides the details of all database administrator who has admin access to monitoring tool
+							along with its compliance status
+							<form method="POST" action = "{{ url_for('comp_report') }}">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+									<div class="col col-xs-2 order-1 mb-1 pb-0">
+										<fieldset class="mt-2 p-1" style="width:400px">
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>DB Technology</strong></span></h6>
+											{{form.opco(class="form-control form-control-md")}}
+											{{form.dbTechnology(class="form-control form-control-md")}}
+											{{form.report(type="hidden",value="montool_admin_comp_report")}}
+										</fieldset>
+										{{ form.submit(class="btn btn-primary btn-lg btn-block mt-5 mb-3",type="submit", id="audit_submit", style="float: right;" ) }}
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<!--
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingSix">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix"><strong>EOS/EOL Report</strong></button>
+					</h2>
+					<div id="flush-collapseSix" class="accordion-collapse collapse" aria-labelledby="flush-headingSix" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Provides the EOS/EOLS details of all databases
+							<form method="POST" action = "{{ url_for('comp_report') }}">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+									<div class="col col-xs-2 order-1 mb-1 pb-0">
+										<fieldset class="mt-2 p-1" style="width:400px">
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>DB Technology</strong></span></h6>
+											{{form.dbTechnology(class="form-control form-control-md")}}
+											{{form.report(type="hidden",value="eos_comp_report")}}
+										</fieldset>
+										{{ form.submit(class="btn btn-primary btn-lg btn-block mt-5 mb-3",type="submit", id="audit_submit", style="float: right;" ) }}
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				-->				
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingSeven">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSeven" aria-expanded="false" aria-controls="flush-collapseSeven"><strong>Licensing Report</strong></button>
+					</h2>
+					<div id="flush-collapseSeven" class="accordion-collapse collapse" aria-labelledby="flush-headingSeven" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Provides the licensing report for a given database technology
+							<form method="POST" action = "{{ url_for('comp_report') }}">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+									<div class="col col-xs-2 order-1 mb-1 pb-0">
+										<fieldset class="mt-2 p-1" style="width:400px">
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Opco</strong></span></h6>
+											{{form.opco(class="form-control form-control-md")}}
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>DB Technology</strong></span></h6>
+											{{form.dbTechnology(class="form-control form-control-md")}}
+											{{form.report(type="hidden",value="db_license_comp_report")}}
+										</fieldset>										
+										{{ form.submit(class="btn btn-primary btn-lg btn-block mt-5 mb-3",type="submit", id="audit_submit", style="float: right;" ) }}
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="flush-headingSeven">
+						<button class="accordion-button collapsed fs-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseEight" aria-expanded="false" aria-controls="flush-collapseEight"><strong>Mongo Memory Usage Report</strong></button>
+					</h2>
+					<div id="flush-collapseEight" class="accordion-collapse collapse" aria-labelledby="flush-headingEight" data-bs-parent="#accordionFlushCompReport">
+						<div class="accordion-body">
+							Generates Mongo memory usage report
+							<form method="POST" action = "{{ url_for('comp_report') }}">
+								{{ form.csrf_token }}
+								{{ form.hidden_tag() }}
+								<div class="row border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+									<div class="col col-xs-2 order-1 mb-1 pb-0">
+										<fieldset class="mt-2 p-1" style="width:400px">
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Opco</strong></span></h6>
+											{{form.opco(class="form-control form-control-md")}}
+											<h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg"><strong>Environment</strong></span></h6>
+											{{form.env(class="form-control form-control-md")}}
+											{{form.report(type="hidden",value="mongo_memory_usage_report")}}
+										</fieldset>										
+										{{ form.submit(class="btn btn-primary btn-lg btn-block mt-5 mb-3",type="submit", id="audit_submit", style="float: right;" ) }}
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>								
+			</div>
+		</div>
+	</div>
+</div>
+<!--
+	<div class="row">
+		<div class="card" style="width: 18rem;">
+			<img src="{{ url_for('static', filename='audit-report.jpg')}}" class="card-img-top mt-3 me-2 ms-2" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">Audit Report</h5>
+				<p class="card-text">Generate report for all auditable database action recorded in a given timeframe </p>
+				<a href="#" class="btn btn-primary">Audit Report</a>
+			</div>
+		</div>
+		<div class="card" style="width: 18rem;">
+			<img src="{{ url_for('static', filename='audit-report.jpg')}}" class="card-img-top mt-3 me-2 ms-2" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">DB Version Compliance Report</h5>
+				<p class="card-text">Generate report for all auditable database action recorded in a given timeframe </p>
+				<a href="#" class="btn btn-primary">Audit Report</a>
+			</div>
+		</div>		
+		<div class="card" style="width: 18rem;">
+			<img src="{{ url_for('static', filename='audit-report.jpg')}}" class="card-img-top mt-3 me-2 ms-2" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">DB Version Compliance Report</h5>
+				<p class="card-text">Generate report for all auditable database action recorded in a given timeframe </p>
+				<a href="#" class="btn btn-primary">Audit Report</a>
+			</div>
+		</div>		
+	</div>
+-->
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}

@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css')}}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (No data found !!!)
+{% endblock title%}
+    <<img src="{{ url_for('static',file_name='no-data.png')}}" alt="">
+{% block content %}

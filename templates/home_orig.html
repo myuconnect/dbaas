@@ -1,0 +1,211 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS Dashboard
+{% endblock title%}
+
+{% block content %}
+	<div class="mt-3 border border-light border-5" style="width:100%; height:400px" >
+		<div class="container ms-3 mt-2 mb-2" style="width:350px;height:400px;float:left; position: relative;">
+		<!--<div class="chart-container"  height:40vh; width:80vw"-->
+		    <canvas id="servers_dc_pie_chart_1"></canvas>
+		</div>
+		<div class="container ms-3 mt-2 mb-2" style="width:350px;height:400px;float:left; position: relative;">
+		<!--<div class="chart-container"  height:40vh; width:80vw"-->
+		    <canvas id="servers_dc_pie_chart_1"></canvas>
+		</div>
+		<div class="container ms-3 mt-2 mb-2" style="width:350px;height:400px;float:left; position: relative;">
+		<!--<div class="chart-container"  height:40vh; width:80vw"-->
+		    <canvas id="servers_dc_pie_chart_2"></canvas>
+		</div>
+		<div class="container ms-3 mt-2 mb-2" style="width:350px;height:400px;float:left; position: relative;">
+		<!--<div class="chart-container"  height:40vh; width:80vw"-->
+		    <canvas id="servers_dc_pie_chart_3"></canvas>
+		</div>
+	</div>	
+	<div class="mt-3 border border-info border-1" style="width:100%; height:400px" >
+		<div style="width:100%; height:300px" >
+			<div class="mb-3 ms-3" style="float:left; width:40%; height: 300px; overflow:auto;">
+			    <table id="hostsVerSummaryTable" class="table table-sm table-bordered table-striped" border="1">
+					<thead class="table-primary">
+						<tr>
+							{% for head in data.hostsVerSummaryHeadings %}
+								<th class="text-nowrap" style="text-align:center;">{{head}}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody class="table-light">
+						{% for row in data.hostVerSummaryData %}
+							<tr>
+								{% for data in row %}
+									<td class="text-nowrap" style="text-align:center;">{{data}}</td>
+								{% endfor %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col col-xs-5 mt-5 mb-2 ms-3 pb-0" style="float:left; width:20%; height: 300px; overflow:auto;">
+	    <table id="tenantSummaryTable" class="table table-sm table-bordered table-striped" border="1" style="width:20%">
+			<thead class="table-primary">
+				<tr>
+					{% for head in data.tenantsSummaryHeadings %}
+						<th class="text-nowrap" style="text-align:center;">{{head}}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody class="table-light">
+				{% for row in data.tenantsSummaryData %}
+					<tr>
+						{% for data in row %}
+							<td class="text-nowrap" style="text-align:center;">{{data}}</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+<div>
+	<div class="container mt-5 border border-primary border-3 ms-3" style="width:300px;height:300px; float:left" style="position: relative;">
+	<!--<div class="chart-container"  height:40vh; width:80vw">-->
+		<canvas id="servers_dc_line_chart" ></canvas>
+	</div>
+</div>
+<script type="text/javascript">
+	/*
+	var request = $.ajax({
+		url: '/processAjaxReq',
+		data: JSON.stringify({"endPoint" : "getDBLists4Tech", "args" : {"dbTechnology": myDBTechnology} } ),
+		contentType: "application/json; charset=utf-8",
+		//dataType: "json",
+		type: 'POST'
+	});
+	*/
+	/*
+	db.hosts.inventory.aggregate([{"$group" : {"_id":"$dcLocation", count:{$sum:1}}}])
+	Single Field Group By & Count:
+
+	db.Request.aggregate([
+	    {"$group" : {_id:"$source", count:{$sum:1}}}
+	])
+	Multiple Fields Group By & Count:
+
+	db.Request.aggregate([
+	    {"$group" : {_id:{source:"$source",status:"$status"}, count:{$sum:1}}}
+	])
+	Multiple Fields Group By & Count with Sort using Field:
+
+	db.Request.aggregate([
+	    {"$group" : {_id:{source:"$source",status:"$status"}, count:{$sum:1}}},
+	    {$sort:{"_id.source":1}}
+	])
+	Multiple Fields Group By & Count with Sort using Count:
+
+	db.Request.aggregate([
+	    {"$group" : {_id:{source:"$source",status:"$status"}, count:{$sum:1}}},
+	    {$sort:{"count":-1}}
+	])
+	*/
+	new Chart(document.getElementById("servers_dc_pie_chart_1"), {
+		type: 'pie',
+		data: {
+			labels: {{ data.hostLocGraphData.label|tojson|safe}},
+			datasets: [{
+				label: "Server count",
+				backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+				data: {{ data.hostLocGraphData.data}}
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Servers'
+			}
+		}
+	});
+
+	new Chart(document.getElementById("servers_dc_pie_chart_2"), {
+		type: 'pie',
+		data: {
+			labels: {{ data.hostVerGraphData.label|tojson|safe}},
+			datasets: [{
+				label: "Server count",
+				backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+				data: {{ data.hostVerGraphData.data }}
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Servers'
+			}
+		}
+	});
+
+	new Chart(document.getElementById("servers_dc_pie_chart_3"), {
+		type: 'pie',
+		data: {
+			labels: {{ data.hostDBTechGraphData.label|tojson|safe}},
+			datasets: [{
+				label: "Server count",
+				backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+				data: {{ data.hostDBTechGraphData.data }}
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Servers'
+			}
+		}
+	});
+
+	//line chart
+	new Chart(document.getElementById("servers_dc_line_chart"), {
+	  type: 'line',
+	  data: {
+	    labels: [1500,1600,1700,1750,1800,1850,1900,1950,1999,2050],
+	    datasets: [{ 
+	        data: [86,114,106,106,107,111,133,221,783,2478],
+	        label: "Africa",
+	        borderColor: "#3e95cd",
+	        fill: false
+	      }, { 
+	        data: [282,350,411,502,635,809,947,1402,3700,5267],
+	        label: "Asia",
+	        borderColor: "#8e5ea2",
+	        fill: false
+	      }, { 
+	        data: [168,170,178,190,203,276,408,547,675,734],
+	        label: "Europe",
+	        borderColor: "#3cba9f",
+	        fill: false
+	      }, { 
+	        data: [40,20,10,16,24,38,74,167,508,784],
+	        label: "Latin America",
+	        borderColor: "#e8c3b9",
+	        fill: false
+	      }, { 
+	        data: [6,3,2,2,7,26,82,172,312,433],
+	        label: "North America",
+	        borderColor: "#c45850",
+	        fill: false
+	      }
+	    ]
+	  },
+		options: {
+			title: {
+				display: true,
+				text: 'World population per region (in millions)'
+		}
+	}
+	});
+</script>
+{% endblock content%}
+
+<canvas id="line-chart" width="800" height="450"></canvas>

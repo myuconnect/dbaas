@@ -1,0 +1,224 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC-DbaaS (Database Inventory)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+    <div class = "row no-gutters mx-auto pl-1 mt-3">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <!--<h1 class="text-center"> Tenants Invenotry {{ current_user.name }}</h1>-->
+        <div>
+            <form method="POST" action = "{{ url_for('tenants') }}">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+
+                {{ form.opco(style="width:180px;font-size:18px;") }}
+                {{ form.region(style="width:180px;font-size:18px;") }}
+                {{ form.dbTechnology(style="width:200px;font-size:18px;") }}
+                {{ form.env(style="width:180px;font-size:18px;") }}
+                {{ form.status(style="width:180px;font-size:18px;") }}
+
+                <label class="d-inline-block"> </label>
+                <input type="submit" class="btn btn-primary btn-md" value="Apply">
+                <div style="height: 10px;"></div> <!-- empty line -->
+                <!-- table-responsive is needed for td class text-nowrap to be used -->
+                <table id="tenantTable" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th>
+                            {% for header in headings %}
+                                <th  class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="table-light">
+                        {% for row in data %}
+                            <tr>
+                                <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                    {% if row[5]|string|upper == "INACTIVE" or row[5]|string|upper == "DECOMISSIONED" %}
+                                        <span class="btn btn-sm btn-outline-secondary btn-view-tenant" role="button"><i class="fas fa-eye"></i></span>
+                                        <!--<span class="btn btn-sm btn-outline-secondary " role="button"><i class="fas fa-ban"></i></span>-->
+                                    {% else %}
+                                        <span class="btn btn-sm btn-outline-secondary btn-view-tenant" role="button"><i class="fas fa-eye"></i></span>
+                                        <span class="btn btn-sm btn-outline-primary btn-edit-tenant" role="button"><i class="fas fa-edit"></i></span>
+                                    {% endif %}
+                                </td>
+                                {% for cell in row %}
+                                    {% if loop.index == 6 %}
+                                        {% if cell.upper() == "DECOMISSIONED" or cell.upper() == "INACTIVE" %}
+                                            <td class="bg-danger text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% else %}
+                                            <td class="bg-success text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% endif %}
+                                    {% elif loop.index == 13 %}
+                                        <td align="right" class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% else %}
+                                        <!-- <td class="text-nowrap" style="cursor:pointer"> {{ cell }} </td> -->
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div>
+                    <!--<button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download"><i class="fa fa-download"></i> Download</button> -->
+                    {% if data|length > 0 %}
+                        <!--<input type="submit" class="btn btn-primary btn-md" data-bs-toggle="tooltip" data-bs-placement="top" title="Download content" value="Download"><i class="fa fa-download"></i>-->
+                        <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download"><i class="fa fa-download"></i> Download</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download" disabled><i class="fa fa-download"></i> Download</button>
+                    {% endif %}
+
+                </div>
+            </form>
+            <script>
+                $('#tenantTable').DataTable({
+                    'columnDefs': [ {
+                        'targets': [0], // column index (start from 0)
+                        'orderable': false // set orderable false for selected columns
+                     }]
+                });
+                    /*
+                    ({
+                    order : [[7, 'asc' ],
+                    //pagingType : 'full_numbers',
+                    lengthMenu : [[5,10,25,50 -1],[5,10,25,50,"All"]],
+                    createdRow: function(row, data, indx){
+                        if (data[5] == "Active"){
+                            $('td', row).eq(5).addClass('text-success');
+                        }
+                    }
+                });*/
+                
+                //var table = $('#sortTable').DataTable();
+                // dialog boxz for confirmation                    
+                $(document).on('click',".btn-view-tenant", function(func){
+                    var currentRow = $(this).closest('tr')
+                    var currentRow=$(this).closest("tr");
+                    var tenantName = currentRow.find("td:eq(2)").text(); // get the qst cell value
+                    //alert("view tenant " + tenantName);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "viewTenant", "args" : {"tenantName": tenantName}}),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        if(response){
+                            console.log(response);
+                            window.location.href=response.redirect;
+                        }
+                        //$('#response').text(JSON.stringify(response)); 
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                    func.stopPropagation();
+                    func.preventDefault();
+                });
+
+                $(document).on('click',".btn-edit-tenant", function(func){
+                    var currentRow = $(this).closest('tr')
+                    var currentRow=$(this).closest("tr");
+                    var tenantName = currentRow.find("td:eq(2)").text(); // get the qst cell value
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "editTenant", "args" : {"tenantName": tenantName}}),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        if(response){
+                            console.log(response);
+                            window.location.href=response.redirect;
+                        }
+                        //$('#response').text(JSON.stringify(response)); 
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                    func.stopPropagation();
+                    func.preventDefault();
+                });
+                /*
+                function showcontent(x){
+                    if(window.XMLHttpRequest) {
+                        xmlhttp = new XMLHttpRequest();
+                    } else {
+                        xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+                    };
+
+                    xmlhttp.onreadystatechange = function() {
+                        if(xmlhttp.readyState == 1) {
+                            document.getElementById('content').innerHTML = "<img href='url_for('static', filename='loading.png')' />";
+                        };
+                        if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                            document.getElementById('content').innerHTML = xmlhttp.responseText;
+                        };
+                    };
+
+                xmlhttp.open('POST', x+'.html', true);
+                xmlhttp.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+                xmlhttp.send(null);
+                */
+
+                
+                /*
+                $(document).on('click',".btn-offb-tenant", function(e){
+                    var currentRow = $(this).closest('tr')
+                    var currentRow=$(this).closest("tr");
+                    var tenantName = currentRow.find("td:eq(2)").text(); // get the qst cell value
+                    alert("view tenant " + tenantName);
+                });
+                */
+                /*
+                $('#tenantTable tbody').on("click", "tr", function(click){
+                    var data = table.row( this ).data();
+                    var currentRow=$(this).closest("tr");
+                    var tenantName = currentRow.find("td:eq(1)").text(); // get the qst cell value
+                    userData = JSON.stringify({"endPoint" : "processAjaxReq", "tenant": tenantName});
+
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "tenant", "args" : {"tenantName": tenantName}}),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        if(response){
+                            console.log(response);
+                            window.location.href=response.redirect;
+                        }
+                        $('#response').text(JSON.stringify(response)); 
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                    click.stopPropagation();
+                    click.preventDefault();
+                });
+                */
+            </script>
+        </div>
+    </div>
+{% endblock content%}
+
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+    
+{% endblock script %}

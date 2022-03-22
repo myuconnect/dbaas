@@ -1,0 +1,262 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC-DbaaS (Hosts Inventory)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+        <div class = "row no-gutters mx-auto pl-1 mt-3">
+            <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+            <!-- <h1 class="text-center"> Host Invenotry {{ current_user.name }}</h1> -->
+            <form method="POST" action = "{{ url_for('hosts') }}">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                <div>
+                    <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+
+                    {{ form.opco(style="width:180px;font-size:18px;", id="opco-select") }}
+                    {{ form.region(style="width:180px;font-size:18px;", id="region-select") }}
+                    {{ form.dbTechnology(style="width:200px;font-size:18px;", id="dbtech-select") }}
+                    {{ form.env(style="width:180px;font-size:18px;", id="env-select") }}
+                    <label class="d-inline-block"> </label>
+                    <input type="submit" class="btn btn-primary btn-md" name="filter" data-bs-toggle="tooltip" data-bs-placement="top" title="Search Hosts" value="Apply">
+
+                    <label class="me-5 d-inline-block" style='float: right;'>
+                        <!--<button class="btn btn-outline-primary btn-md"><i class="fas fa-plus-square"></i></button>-->
+                        <a href="{{ url_for('new_host') }}" class="btn btn-outline-primary btn-md" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Register new host"><i class="fas fa-plus-square"></i></a>
+                    </label>
+
+                </div>
+                <div style="height: 10px;"></div> <!-- empty line -->
+                <table id="hostInventoryTable" class="table table-active table-sm table-bordered table-responsive table-hover" style="width:100%">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> Action </th>
+                            {% for header in headings %}
+                                <th style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="table-light">
+                        {% for row in data %}
+                            <tr>
+                                <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                    {% if row[7]|string|upper == "INACTIVE" or row[7]|string|upper == "DECOMISSIONED" %}
+                                        <span class="btn btn-sm btn-outline-secondary btn-view-host" role="button"><i class="fas fa-eye"></i></span>
+                                        <!--<span class="btn btn-sm btn-outline-secondary " role="button"><i class="fas fa-ban"></i></span>-->
+                                    {% else %}
+                                        <span class="btn btn-sm btn-outline-secondary btn-view-host" role="button"><i class="fas fa-eye"></i></span>
+                                        <span class="btn btn-sm btn-outline-primary btn-edit-host" role="button"><i class="fas fa-edit"></i></span>
+                                    {% endif %}
+                                </td>
+                                {% for cell in row %}
+                                    {% if loop.index == 8 %}
+                                        {% if cell.upper() == "INACTIVE" or cell.upper() == "DECOMISSIONED" %}
+                                            <td class="bg-danger text-nowrap non-clickable-row" style="cursor:default"> {{ cell }} </td>
+                                        {% else %}
+                                            <td class="bg-success text-nowrap non-clickable-row" style="cursor:default"> {{ cell }} </td>
+                                        {% endif %}
+                                    {% else %}
+                                        <td class="text-nowrap non-clickable-row" style="cursor:default"> {{ cell }} </td>                                    
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div>
+                    {% if data|length > 0 %}
+                        <!--<input type="submit" class="btn btn-primary btn-md" data-bs-toggle="tooltip" data-bs-placement="top" title="Download content" value="Download"><i class="fa fa-download"></i>-->
+                        <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download"><i class="fa fa-download"></i> Download</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download" disabled><i class="fa fa-download"></i> Download</button>
+                    {% endif %}
+                </div>
+            </form>
+            <script>
+                $('#hostInventoryTable').DataTable({
+                    'columnDefs': [ {
+                    'targets': [0], // column index (start from 0)
+                    'orderable': false // set orderable false for selected columns
+                    }]
+                });
+
+                function exportData(){
+                    // this is sample
+                    /* Get the HTML data using Element by Id */
+                    var table = document.getElementById("#hostInventoryTable");
+                 
+                    /* Declaring array variable */
+                    var rows =[];
+                 
+                      //iterate through rows of table
+                    for(var i=0,row; row = table.rows[i];i++){
+                        //rows would be accessed using the "row" variable assigned in the for loop
+                        //Get each cell value/column from the row
+                        column1 = row.cells[0].innerText;
+                        column2 = row.cells[1].innerText;
+                        column3 = row.cells[2].innerText;
+                        column4 = row.cells[3].innerText;
+                        column5 = row.cells[4].innerText;
+                 
+                    /* add a new records in the array */
+                        rows.push(
+                            [
+                                column1,
+                                column2,
+                                column3,
+                                column4,
+                                column5
+                            ]
+                        );
+                 
+                        }
+                        csvContent = "data:text/csv;charset=utf-8,";
+                         /* add the column delimiter as comma(,) and each row splitted by new line character (\n) */
+                        rows.forEach(function(rowArray){
+                            row = rowArray.join(",");
+                            csvContent += row + "\r\n";
+                        });
+                 
+                        /* create a hidden <a> DOM node and set its download attribute */
+                        var encodedUri = encodeURI(csvContent);
+                        var link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "Stock_Price_Report.csv");
+                        document.body.appendChild(link);
+                         /* download the data file named "Stock_Price_Report.csv" */
+                        link.click();
+                }
+                /*
+                $(document).on('click',".btn-download", function(click){
+                    //alert("download button clicked");
+                    // we need form selection value
+                    console.log("download button clicked");
+                    var opco = document.getElementById("opco-select").value;
+                    var region = document.getElementById("region-select").value;
+                    var dbTechnology = document.getElementById("dbtech-select").value;
+                    var env = document.getElementById("env-select").value;
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "download", "args" : {"contentType": "hosts", "contentArgs" : {"opco" : opco, "region" : region, "dbTechnology" : dbTechnology, "env" : env}}}),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        if(response){
+                            //console.log(response, response.fileName);
+                            var blob = response.data
+                            a = document.createElement('a');
+                            a.href = response.fileName;
+                            a.download=response.fileName;
+                            a.style.display=-"none";
+                            document.body.appendChild(a);
+                            a.click();
+                            //window.location.href=response.redirect;
+                        }
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                    click.stopPropagation();
+                    click.preventDefault();
+                });
+                */
+                $(document).on('click',".btn-view-host", function(click){
+                    var currentRow = $(this).closest('tr')
+                    var currentRow=$(this).closest("tr");
+                    var hostName = currentRow.find("td:eq(1)").text(); // get the qst cell value
+                    //alert("view host " + hostName);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "viewHost", "args" : {"hostName": hostName}}),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        if(response){
+                            console.log(response);
+                            window.location.href=response.redirect;
+                        }
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                    click.stopPropagation();
+                    click.preventDefault();
+                });
+
+                $(document).on('click',".btn-edit-host", function(click){
+                    var currentRow = $(this).closest('tr')
+                    var currentRow=$(this).closest("tr");
+                    var hostName = currentRow.find("td:eq(1)").text(); // get the qst cell value
+                    //alert("edit host " + hostName);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "editHost", "args" : {"hostName": hostName}}),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        if(response){
+                            console.log(response);
+                            window.location.href=response.redirect;
+                        }
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                    click.stopPropagation();
+                    click.preventDefault();
+                });
+                /*
+                $(document).ready(function() {
+                    var table = $('#sortTable').DataTable();
+
+                    $('#sortTable tbody').on("click", "tr", function(click){
+                        var data = table.row( this ).data();
+                        var currentRow=$(this).closest("tr");
+                        var hostName = currentRow.find("td:eq(0)").text(); // get the qst cell value
+                        var myUrl = "{{ url_for("processAjaxReq") }}";
+                        myUrl = myUrl + "/" + hostName;
+            
+                        var request = $.ajax({
+                            url: '/processAjaxReq',
+                            data: JSON.stringify({"endPoint" : "host", "args" : {"hostName": hostName}}),
+                            contentType: "application/json; charset=utf-8",
+                            //dataType: "json",
+                            type: 'POST'
+                        });
+                        request.done(function(response) {
+                            //window.location.href="/host.html";
+                            if(response){
+                                console.log(response);
+                                window.location.href=response.redirect;
+                            }
+                            $('#response').text(JSON.stringify(response)); 
+                        });
+                        request.fail(function(jqXHR, textStatus, errorThrown) {
+                            console.warn(jqXHR.responseText)
+                            console.log(JSON.stringify(jqXHR));
+                            console.log( "Request failed: " + textStatus + errorThrown);
+                        });
+                        click.stopPropagation();
+                        click.preventDefault();
+                    });
+                }); */
+            </script>
+        </div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+
+{% block script %}
+{% endblock script %}

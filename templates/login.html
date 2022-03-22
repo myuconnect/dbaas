@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "bootstrap/form.html" import render_form, render_form_row, render_field, render_hidden_errors %}
+{% from 'bootstrap/utils.html' import render_icon %}
+
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .important { color: #336699; }
+    </style>
+{% endblock %}
+
+{% block content %}
+	<form style="max-width:400px;margin:auto;" method="post">
+		<img class = "mt-4 mb-4" src="{{ url_for('static',filename='images/mmc_logo_3.png') }}" height="72" alt="Marsh Logo">
+		{{ form.csrf_token() }}
+		{{ render_form(form, method="POST", extra_classes="mt-4 mb-4")}}
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% for category, message in messages %}
+				<div class="{{ category }}">{{ message }}</div>
+			{% endfor %}
+		{% endwith %}
+		<!--
+		{% for message in get_flashed_messages() %}
+			<div class="alert alert-warning">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				{{ message }}
+			</div>
+    	{% endfor %}
+		-->		
+	</form>
+{% endblock content %}

@@ -1,0 +1,122 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC-DbaaS (Licensing data)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+    <div class = "row no-gutters mx-auto pl-1 mt-3">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <!--<h1 class="text-center"> Tenants Invenotry {{ current_user.name }}</h1>-->
+        <div>
+            <form method="POST" action = "{{ url_for('licensing') }}">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+
+                {{ form.opco(style="width:180px;font-size:18px;") }}
+
+                <label class="d-inline-block"> </label>
+                <input type="submit" class="btn btn-primary btn-md" value="Apply">
+
+                <div class="mt-3 ms-3 mb-3 table-responsive" style="justify-content: center;">
+                    <table id="licensingSummaryTable" class="table table-md table-bordered" style="width: 300px;">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in data.summaryHeadings %}
+                                    <th  class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in data.summaryData %}
+                                <tr>
+                                    {% if row[0]|upper == "TOTAL" %}
+                                        {% for cell in row %}
+                                            <td class="text-nowrap bg-info" style="cursor:default">{{ cell }}</td>
+                                        {% endfor %}
+                                    {% else %}                                    
+                                        {% for cell in row %}
+                                            <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 ms-3 mb-3 table-responsive">
+                    <table id="licensingTable" class="table table-md table-bordered table-responsive table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in data.headings %}
+                                    <th  class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in data.data %}
+                                <tr>
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!--
+                <div style="height: 10px;"></div> 
+                <table id="licensingTable" class="table table-sm table-bordered table-responsive table-hover" style="width:80%">
+                    <thead class="table-primary">
+                        <tr>
+                            {% for header in data.headings %}
+                                <th  class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="table-light">
+                        {% for row in data.data %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                -->
+            </form>
+            <div>
+                <!-- <input type="submit" class="btn btn-primary btn-sm" type="download" value="Download">-->
+                <button class="btn btn-primary btn-md"><i class="fa fa-download"></i> Download</button>
+            </div>
+            <script>
+                $('#licensingTable').DataTable({
+                    'columnDefs': [ {
+                        'targets': [0], // column index (start from 0)
+                        'orderable': false // set orderable false for selected columns
+                     }]
+                });
+                    /*
+                    ({
+                    order : [[7, 'asc' ],
+                    //pagingType : 'full_numbers',
+                    lengthMenu : [[5,10,25,50 -1],[5,10,25,50,"All"]],
+                    createdRow: function(row, data, indx){
+                        if (data[5] == "Active"){
+                            $('td', row).eq(5).addClass('text-success');
+                        }
+                    }
+                });*/
+                
+            </script>
+        </div>
+    </div>
+{% endblock content%}
+
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+    
+{% endblock script %}
+

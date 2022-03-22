@@ -1,0 +1,442 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC DbaaS - Edit DB Admin
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+    {% if (admin is defined) and admin %}
+        <form id = "editAdmin" method="POST" action = "{{ url_for('editDBAdmin', employeeId = admin._id ) }}">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <div class="row border border-left-1 border-primary border-3 col ms-5 me-5 mt-5">
+                <div class="modal fade" id="offboard_admintech_modal" tabindex="-1" role="dialog" aria-labelledby="offboardAdminTech" aria-hidden="true">
+                    <div class="modal-dialog " role = "document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="offboardDBAdminTechModalTitle">Offboard Admnin (DbTechnology)</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            <div class="mt-3 modal-body">
+                                <label ><strong>Employee ID : </strong></label>
+                                <label id = "modal_offboard_admin_employee_id">{{admin._id}}</label>
+                                <br></br>
+                                <label ><strong>Employee Name: </strong></label>
+                                <label id = "modal_offboard_admin_employee_name">{{admin.name}}</label>
+                                <br></br>
+                                <label ><strong>DB Technology: </strong></label>
+                                <label id = "modal_offboard_admintech_dbtechnology"></label>
+                                <br></br>
+                                <label ><strong>Off Boarding Doc (CA/CO#) :</strong></label>
+                                {{form.offBoardingAdminTechDoc(id="offBoardingAdminTechDoc", class="mt-3 form-control-md", required='required', placeholder="CA/CO#")}}
+                                <label ><strong>Off Boarding Date : </strong></label>
+                                {{form.offBoardingAdminTechDate(id="offBoardingAdminTechDate",class="mt-3 form-control-md", required='required', type="date")}}
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id ="offboardAdminTechSubmit" class="btn btn-primary" data-toggle="modal" data-bs-dismiss="modal" >Offboard</button>
+                                </div>
+                            </div>
+                            <script>
+                                $( document ).ready(function() {
+                                    $('#offboardAdminTechSubmit').click(function(func) {
+                                        /* when the button in the form, display the entered values in the modal */
+                                        //alert("processing off boarding admin tech");
+                                        //performing ajax call to offboard the db admin technology
+                                        //var employeeId = document.getElementById("modal_offboard_admin_employee_id").innerText;
+                                        var employeeId = document.getElementById("employee_id").value;
+                                        var dbTechnology = document.getElementById("modal_offboard_admintech_dbtechnology").innerText;
+                                        var offBoardingDoc = document.getElementById("offBoardingAdminTechDoc").value;                             
+                                        var offBoardingDate = document.getElementById("offBoardingAdminTechDate").value;                             
+                                        alert("offboard admin tech " + employeeId + dbTechnology);
+                                        // changing hidden field value to empty, if form is submitted we will not save change unless save button is clicked
+                                        document.getElementById("saveChanges").value = "";
+
+                                        var response = $.ajax({
+                                            url: '/processAjaxReq',
+                                            data: JSON.stringify({"endPoint" : "offboardDBAdminTech", "args" : {"employeeId": employeeId, "dbTechnology" : dbTechnology.toLowerCase(), "offBoardingDoc" : offBoardingDoc, "offBoardingDate" : offBoardingDate}}),
+                                            contentType: "application/json; charset=utf-8",
+                                            type: 'POST'
+                                        });
+                                        console.log("ajax response >>>" + response)
+                                        response.done(function(response) {
+                                            //window.location.href="/host.html";
+                                            if(response){
+                                                console.log(response);
+                                                // we want to post the submit to main form
+                                                document.getElementById("editAdmin").submit();
+                                                alert("form response " + response);
+                                                //window.location.href=response.redirect;
+                                            }
+                                            //$('#response').text(JSON.stringify(response)); 
+                                        });
+                                        response.fail(function(jqXHR, textStatus, errorThrown) {
+                                            console.warn(jqXHR.responseText)
+                                            console.log(JSON.stringify(jqXHR));
+                                            console.log( "Request failed: " + textStatus + errorThrown);
+                                            //document.getElementById("editAdmin").submit();
+                                        });
+                                        func.stopPropagation();
+                                        func.preventDefault();
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="offboard_admin_modal" tabindex="-1" aria-labelledby="offboardAdmin" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="offboardDBAdminModalTitle">Offboard Admnin</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="mt-3 modal-body">
+                                <label ><strong>Employee ID : </strong></label>
+                                <label id = "modal_offboard_admin_employee_id">{{admin._id}}</label>
+                                <br></br>
+                                <label ><strong>Employee Name: </strong></label>
+                                <label id = "modal_offboard_admin_employee_name">{{admin.name}}</label>
+                                <br></br>
+                                <label ><strong>Off Boarding Doc (CA/CO#) :</strong></label>
+                                {{form.offBoardingAdminDoc(id="offBoardingAdminDoc", class="mt-3 form-control-md", required='required', placeholder="CA/CO#")}}
+                                <label ><strong>Off Boarding Date : </strong></label>
+                                {{form.offBoardingAdminDate(id="offBoardingAdminDate", class="mt-3 form-control-md", required='required', type="date")}}
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id ="offboardAdminSubmit" class="btn btn-primary" data-toggle="modal" data-bs-dismiss="modal" >Offboard</button>
+                                </div>
+                            </div>
+                            <script>
+                                $( document ).ready(function() {
+                                    $('#offboardAdminSubmit').click(function(func) {
+                                        /* when the button in the form, display the entered values in the modal */
+                                        //alert("processing off boarding admin");
+                                        //performing ajax call to offboard the db admin technology
+                                        var employeeId = document.getElementById("modal_offboard_admin_employee_id").innerText;
+                                        //var dbTechnology = document.getElementById("modal_offboard_admintech_dbtechnology").innerText;
+                                        var offBoardingDoc = document.getElementById("offBoardingAdminDoc").value;                          
+                                        var offBoardingDate = document.getElementById("offBoardingAdminDate").value;                             
+                                        alert("employee id " + employeeId + " offboarding doc :" + offBoardingDoc + " offboarding date" + offBoardingDate);
+
+                                        // changing hidden field value to empty, if form is submitted we will not save change unless save button is clicked
+                                        document.getElementById("saveChanges").value = "";
+
+                                        var response = $.ajax({
+                                            url: '/processAjaxReq',
+                                            data: JSON.stringify({"endPoint" : "offboardDBAdmin", "args" : {"employeeId": employeeId, "offBoardingDoc" : offBoardingDoc, "offBoardingDate" : offBoardingDate}}),
+                                            contentType: "application/json; charset=utf-8",
+                                            type: 'POST'
+                                        });
+                                        console.log("ajax response >>>" + response)
+                                        response.done(function(response) {
+                                            //window.location.href="/host.html";
+                                            if(response){
+                                                console.log(response);
+                                                // we want to post the submit to main form
+                                                //document.getElementById("editAdmin").submit();
+                                                //alert("form response " + response);
+                                                window.location.href=response.redirect;
+                                            }
+                                            //$('#response').text(JSON.stringify(response)); 
+                                        });
+                                        response.fail(function(jqXHR, textStatus, errorThrown) {
+                                            console.warn(jqXHR.responseText)
+                                            console.log(JSON.stringify(jqXHR));
+                                            console.log( "Request failed: " + textStatus + errorThrown);
+                                            //document.getElementById("editAdmin").submit();
+                                        });
+                                        func.stopPropagation();
+                                        func.preventDefault();
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="new_admintech_modal" tabindex="-1" role="dialog" aria-labelledby="new_admintech_modal" aria-hidden="true">
+                    <div class="modal-dialog " role = "document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="onBoardModalTitle">Onboard New DB Technology</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="mt-3 modal-body">
+                                <label ><strong>Employee ID : </strong></label>
+                                <label id = "modal_new_admintech_employee_id">{{admin._id}}</label>
+                                <br></br>
+                                <label ><strong>Employee Name: </strong></label>
+                                <label id = "modal_new_admintech_employee_name">{{admin.name}}</label>
+                                <br></br>
+                                <label ><strong>DB Technology: </strong></label>
+                                {{form.newDBTechnology(class="mt-3 form-control-md", required='required')}}
+                                <br></br>
+                                <label ><strong>OPCO: </strong></label>
+                                {{form.opco(class="mt-3 form-control-md", required='required')}}
+                                <br></br>
+                                <label ><strong>On Boarding Doc :</strong></label>
+                                {{form.onBoardingDoc(class="mt-3 form-control-md", required='required', id="onBoardingDoc", placeholder="CA/CO#)")}}
+                                <label ><strong>On Boarding Date :</strong></label>
+                                {{form.onBoardingDate(class="mt-3 form-control-md", type="date", required='required', id="onBoardingDate")}}
+                                <br></br>
+                                <label ><strong>Login ID(s) :</strong></label>
+                                {{form.newDBLoginIds(class="mt-3 form-control-md", required='required',placeholder="Login ids (seperated by comma)", size=30)}}
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id ="onboardAdminTechSubmitBtn" class="btn btn-primary" data-toggle="modal" data-bs-dismiss="modal" >Onboard</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        $( document ).ready(function() {
+                            $('#onboardAdminTechSubmitBtn').click(function(func) {
+                                /* when the button in the form, display the entered values in the modal */
+                                alert("processing on boarding new db tech");
+                                //performing ajax call to offboard the db admin technology
+                                //var employeeId = document.getElementById("modal_offboard_admin_employee_id").innerText;
+                                var employeeId = document.getElementById("employee_id").value;
+                                var dbTechnology = document.getElementById("newDBTechnology").value;
+                                var opco = document.getElementById("opco").value;                            
+                                var onBoardingDoc = document.getElementById("onBoardingDoc").value;
+                                var onBoardingDate = document.getElementById("onBoardingDate").value;
+                                var newDBLoginIds = document.getElementById("newDBLoginIds").value;
+                                alert("onboarding admin tech " + employeeId + " , ", dbTechnology + " , ", newDBLoginIds);
+                                // changing hidden field value to empty, if form is submitted we will not save change unless save button is clicked
+                                document.getElementById("saveChanges").value = "";
+
+                                var response = $.ajax({
+                                    url: '/processAjaxReq',
+                                    data: JSON.stringify({
+                                        "endPoint" : "onboardDBAdminTech", 
+                                        "args" : {
+                                                "employeeId": employeeId, 
+                                                "opco" : opco,
+                                                "dbTechnology" : dbTechnology, 
+                                                "onBoardingDoc" : onBoardingDoc, 
+                                                "onBoardingDate" : onBoardingDate, 
+                                                "dbLoginIds" : newDBLoginIds
+                                        }
+                                    }),
+                                    contentType: "application/json; charset=utf-8",
+                                    type: 'POST'
+                                });
+                                console.log("ajax response >>>" + response)
+                                response.done(function(response) {
+                                    //window.location.href="/host.html";
+                                    if(response){
+                                        console.log(response);
+                                        // we want to post the submit to main form
+                                        //document.getElementById("editAdmin").submit();
+                                        //alert("form response " + response);
+                                        window.location.href=response.redirect;
+                                    }
+                                    //$('#response').text(JSON.stringify(response)); 
+                                });
+                                response.fail(function(jqXHR, textStatus, errorThrown) {
+                                    console.warn(jqXHR.responseText)
+                                    console.log(JSON.stringify(jqXHR));
+                                    console.log( "Request failed: " + textStatus + errorThrown);
+                                    //document.getElementById("editAdmin").submit();
+                                });
+                                func.stopPropagation();
+                                func.preventDefault();
+                            });
+                        });
+                    </script>
+                </div>
+                <div class = "row no-gutters mx-auto pl-1">
+            <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+            <!--<h1 class="text-center"> DB Admin Details</h1>-->
+                    <div class="col col-sm-5 order-1 mb-2 pb-0">
+                        <fieldset class="mt-2 p-1" style="width:600px">
+                            <legend></legend>
+                            <h6><span class="label label-default form-control-md" for ="employee_id"><strong>Employee&nbsp;Id</strong></span></h6>
+                            <input class="form-control form-control-md" type="text" id="employee_id" name="employee_id" value = "{{admin._id}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Name</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="employee_name" name="employee_name" value = "{{admin.name}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Status</strong></span></h6>
+                            {% if admin.status.upper() == "ACTIVE" %}
+                                <input class="form-control form-control-md bg-success text-white mb-2" type="text" id="status" name="status" value = "{{admin.status}}" readonly disabled>
+                            {% elif admin.status.upper() == "IN-ACTIVE" %}
+                                <input class="form-control form-control-md bg-danger text-white mb-2" type="text" id="status" name="status" value = "{{admin.status}}" readonly disabled>
+                            {% else %}
+                                <input class="form-control form-control-md mb-2" type="text" id="status" name="status" value = "{{admin.status}}" readonly disabled>                    
+                            {% endif %}
+                        </fieldset>
+                    </div>
+                    <div class="col col-sm-5 order-2 mb-2 pb-0 me-5">
+                        <fieldset class="mt-2 p-1" style="width:600px">
+                            <legend></legend>
+                            <h6><span class="label label-default form-control-md"><strong>Location</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="location" name="location" value = "{{admin.location}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Email</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="email" name="email" value = "{{admin.email}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Contact</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="contact" name="contact" value = "{{admin.contact}}">
+                            <input class="form-control" type="hidden" id = "saveChanges" name = "saveChanges">
+                        </fieldset>
+                    </div>
+                </div>
+                <ul class="nav nav-pills mb-3 mt-3 me-3 ms-3" id="pills-tab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="ms-5 me -5 nav-link active" id="pills-dbTechnologies-tab" data-bs-toggle="pill" data-bs-target="#pills-dbTechnologies" type="button" role="tab" aria-controls="pills-dbTechnologies" aria-selected="true">DB Technologies</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab" aria-controls="pills-history" aria-selected="false">History</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="ms-5 me-5 mx-auto tab-pane fade show active " id="pills-dbTechnologies" role="tabpanel" aria-labelledby="pills-dbTechnologies-tab">
+                        {% if 'dbTechData' in admin %}
+                            <table id="dbTechTable" class="mb-2 me-2 mt-2 ms-5 table table-md table-bordered table-responsive table-hover" style="width:40%; margin-right:10px;">
+                                <!-- style="width:100% float: left;margin-right:10px"> dispaly table side by side -->
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th>
+                                        {% for header in admin.dbTechHeadings %}
+                                            <th class = "text-nowrap col-sm-5" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody class="table-light">
+                                    {% for row in admin.dbTechData %}
+                                        <tr>
+                                            <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                                {% if row[3].upper() == "ACTIVE" %}
+                                                    <span class="btn btn-sm btn-outline-danger btn-offboard-dbadmin" role="button"><i class="fas fa-trash-alt"></i></span>
+                                                {% else %}
+                                                    <span class="btn btn-sm btn-ban-dbadmin" role="button" disabled><i class="fas fa-ban"></i></span>
+                                                {% endif %}
+                                            </td>
+                                            {% for cell in row %}
+                                                {% if loop.index == 4 %}
+                                                    {% if cell|upper == "ACTIVE" %}
+                                                        <td class="text-nowrap text-success" style="cursor:default"> {{ cell }} </td>
+                                                    {% else %}
+                                                        <td class="text-nowrap text-danger" style="cursor:default"> {{ cell }} </td>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center">
+                                <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                            </div>
+                        {% endif %}
+                        <script>
+                            //$('#dbTechTable').DataTable();
+                            $( document ).ready(function() {
+                                $("#dbTechTable").on('click',".btn-offboard-dbadmin", function(offboard){
+
+                                    var currentRow = $(this).closest("tr");
+                                    var dbLoginId = currentRow.find("td:eq(3)").text(); // get the 1st cell value
+                                    var dbTechnology = currentRow.find("td:eq(1)").text(); // get the 1st cell value
+                                    var employeeId = document.getElementById("employee_id").value;
+                                    var employeeName = document.getElementById("employee_name").value;
+                                    // changing hidden field value to empty, if form is submitted we will not save change unless save button is clicked
+                                    document.getElementById("saveChanges").value = "";
+
+                                    //alert("showing offboarding admin tech modal, employee id : " + employeeId + " login id " + dbLoginId + "db technology " + dbTechnology);
+
+                                    $('#offboard_admintech_modal').modal("show");
+                                    var offboardModal = document.getElementById("offboard_admintech_modal");
+                                    document.getElementById("modal_offboard_admintech_dbtechnology").innerText = dbTechnology;
+                                    $('#offboard_admintech_modal').modal('show');
+                                    offboard.stopPropagation();
+                                    offboard.preventDefault();
+                                });
+                                
+                                $('#offboard_admintech_modal').on('shown.bs.modal', function () {
+                                    $('#offBoardingDoc').trigger('focus')
+                                });
+                                $('#offboard_admin_modal').on('shown.bs.modal', function () {
+                                    $('#offBoardingDoc').trigger('focus')
+                                });
+                            });
+                        </script>
+                    </div>
+                    <div class="ms-5 me-5 tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+                        {% if 'histData' in admin %}
+                            <table id="histTable" class="mb-2 me-2 mt-2 ms-5 table table-md table-striped table-bordered table-responsive table-hover" style="width:40%; left;margin-right:10px">
+                                <!-- style="width:100% float: left;margin-right:10px"> dispaly table side by side -->
+                                <thead class="table-primary">
+                                    <tr>
+                                        {% for header in admin.histHeadings %}
+                                            <th class = "col-sm-5" style="width: 20%"> {{ header }}  </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody class="table-light">
+                                    {% for row in admin.histData %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center">
+                                <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                            </div>
+                        {% endif %}
+                        <script>
+                            //$('#histTable').DataTable();
+                        </script>                    
+                    </div>
+                <div class="mt-3">
+                    {% if admin.status | upper == "ACTIVE" %}
+                        <button class="btn btn-lg btn-primary btn-block mb-3" style="float: right;" data-bs-toggle="modal" data-bs-target="#new_admintech_modal">Onboard New DB Tech</button>
+                        <button type = "submit" id = "saveDBAdmin" class="btn btn-lg btn-primary btn-block me-3 ms-3 mb-3" data-toggle="tooltip" data-placement="top" title="Save changes" style="float: right;">Save</button>
+                        <button class="btn btn-lg btn-danger btn-block ms-3 mb-3" style="float: right;" data-bs-toggle="modal" data-bs-target="#offboard_admin_modal">Offboard</button>
+                    {% else %}
+                        <button class="btn btn-lg btn-info btn-block ms-3 mb-3" style="float: right;" onclick="window.location.href='{{ url_for('admin_roster') }}';">Cancel</button>
+                    {% endif %}
+                </div>
+                <script>
+                    $( document ).ready(function() {
+                        $('#saveDBAdmin').click(function(func) {
+                            /* when the button in the form, display the entered values in the modal */
+                            //alert("saving db admin changes");
+                            //performing ajax call to offboard the db admin technology
+                            //var employeeId = document.getElementById("modal_offboard_admin_employee_id").innerText;
+                            //var dbTechnology = document.getElementById("modal_offboard_admintech_dbtechnology").innerText;
+                            //var offBoardingDoc = document.getElementById("offBoardingDoc").value;                             
+                            //var offBoardingDate = document.getElementById("offBoardingDate").value;                             
+                            //alert("employee id " + employeeId + " dbtechnology : " + dbTechnology + " supporting doc :" + offBoardingDoc);
+                            document.getElementById("saveChanges").value = "saveChanges";
+                            document.getElementById("editAdmin").submit();
+                            func.stopPropagation();
+                            func.preventDefault();
+                        });
+                    });
+                </script>
+            </form>
+        </div>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width:auto;">
+        </div>
+    {% endif %}
+{% endblock content %}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+    
+{% endblock script %}
+

@@ -1,0 +1,162 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    {{ super() }}
+{% endblock head %}
+
+{% block title %}
+    MMC-DbaaS (Register New Host)
+{% endblock title%}
+
+{% block user %}
+    <div>
+        <li class="nav-item"><i class="fas fa-user"></i>{{ user }}<a class="nav-link" href="#"></a></li>
+    </div>
+{% endblock user %}
+
+{% block content %}
+<!--
+<form>
+  <div class="form-group row">
+    <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+    </div>
+  </div>
+-->
+    <!--<h1 class="h3 mb-3 font-weight-normal text-center mt-2">{{ title }}</h1> -->
+  	<div class="text-center ms-3 me-5 mt-5">
+		<!-- <form style="max-width:400px;margin:auto;"> -->
+        <form class="horizontol" action="{{ url_for('new_host') }}" method="POST" >
+
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+
+            <div class="row border border-left-1 border-primary border-3 col mx-auto">
+                <div class="col col-xs-2 order-1 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:400px">
+                        <legend></legend>
+                        <h6 class="mt-2" align="left"><span class="mt-2 p-2 label label-default form-control-lg ">Opco</span></h6>
+                        <p>{{form.opco(class_="form-control form-control-md", size=1, required="required")}}</p>
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Region</span></h6>
+                        {{form.region(class_="form-control form-control-md", required="required")}}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">DC Location</span></h6>
+                        {{form.dcLocation(class_="form-control form-control-md", required="required")}}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Tier</span></h6>
+                        {{form.tier(class_="form-control form-control-md", required="required")}}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Environment</span></h6>
+                        {{form.env(class_="form-control form-control-md", required="required")}}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">DB Technology</span></h6>
+                        {{form.dbTechnology(class_="form-control form-control-md")}}
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:400px">
+                        <legend class="w-auto"></legend>
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Scan Enabled</span></h6>
+                        {{form.scanEnabled(class_="form-control form-control-md", required="required")}}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Tag</span></h6>
+                        {% if form.tag.errors %}
+                            {{ form.tag(class_="form-control form-control-md is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.tag.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>                            
+                        {% else %}
+                            {{ form.tag(class_="form-control form-control-md", placeholder ="<opco.region.dclocation.dbtechnology>", required="required") }}
+                        {% endif %}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Comments</span></h6>
+                        {{ form.comments(class_="form-control form-control-md", placeholder="Enter your comments here", cols="2", rows="5", required="required")|safe }}
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-3 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:400px">
+                        <legend class="w-auto"></legend>
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Host Name</span></h6>
+                        {% if form.hostName.errors %}
+                            {{ form.hostName(class_="form-control form-control-md is-invalid", required="required") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.hostName.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>                            
+                        {% else %}
+                            {{form.hostName(class_="form-control form-control-md", placeholder="Host name", required="required")}}
+                        {% endif %}
+
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">CPU</span></h6>
+                        {% if form.cpu.errors %}
+                            {{ form.cpu(class_="form-control form-control-md is-invalid",required="required") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.cpu.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>                            
+                        {% else %}
+                            {{ form.cpu(class_="form-control form-control-md",required="required") }}
+                        {% endif %}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Physical Memory (GB)</span></h6>
+                        {% if form.memoryGB.errors %}
+                            {{ form.memoryGB(class_="form-control form-control-md is-invalid",required="required") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.memoryGB.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>                            
+                        {% else %}
+                            {{form.memoryGB(class_="form-control form-control-md")}}
+                        {% endif %}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Swap Memory (GB)</span></h6>
+                        {% if form.swapGB.errors %}
+                            {{ form.swapGB(class_="form-control form-control-md is-invalid",required="required") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.swapGB.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>                            
+                        {% else %}
+                            {{form.swapGB(class_="form-control form-control-md",required="required")}}
+                        {% endif %}
+                        <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">OS</span></h6>
+                        {{form.os(class_="form-control form-control-md",required="required")}}
+                    </fieldset>
+                    <div class="mt-3">
+                        {{ form.submit(class="btn btn-lg btn-primary btn-block mt-3 me-3 ms-3 mb-3", style="float: right;") }}
+                        <button type = "button" id = "cancel" class="btn btn-lg btn-secondary btn-block mt-3 me-3 ms-3 mb-3" data-toggle="tooltip" data-placement="top" title="Cancel" style="float: right;" onclick="window.location.href='{{ url_for('hosts')}}'">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+         <!--   <div class="form-group row border border-left-1 border-primary border-3 col mx-auto mt-2 " style="width:800px; display:flex; justify-content: center; align-items: center">
+                <div class="d-grid gap-1" style="width:500px;">
+                    <h6 class="mt-2" align="left"><span class="mt-2 p-2 label label-default form-control-lg ">Opco</span></h6>
+                    {{form.opco(class_="form-control form-control-md")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">Region</span></h6>
+                    {{form.region(class_="form-control form-control-md")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label-default form-control-lg">DC Location</span></h6>
+                    {{form.dcLocation(class_="form-control form-control-md")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label label-default form-control-lg">Environment</span></h6>
+                    {{form.env(class_="form-control form-control-md")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label label-default form-control-lg">Tier</span></h6>
+                    {{form.tier(class_="form-control form-control-md")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label label-default form-control-lg">DB Technology</span></h6>
+                    {{form.dbTechnology(class_="form-control form-control-md required")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label label-default form-control-lg">HostName</span></h6>
+                    {{form.hostName(class_="form-control form-control-md required")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label label-default form-control-lg">Tag</span></h6>
+                    {{form.tag(class_="form-control form-control-md required")}}
+                    <h6 class="mt-2" align="left"><span class="p-2 label label label-default form-control-lg">Comments</span></h6>
+                    {{form.comments(class_="form-control form-control-md required")}}
+                    <h6 class="mt-2 inline-block" align="left"><span class="dp-2 label label label-default form-control-lg">Scan Enabled</span></h6>
+                    <span>{{form.scanEnabled(class_="required")}}</span>
+                    <div class="mt-3">
+                        <button class="btn btn-lg btn-primary btn-block mb-3" style="float: right;">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form> -->
+	</div>
+{% endblock content %}
+{% block script %}
+{% endblock script %}

@@ -1,0 +1,163 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (View Compliance Task - {{comp._id}})
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    {% if (comp is defined) and comp %}
+        <form action="{{ url_for('view_tenant_compliance', tenantName = comp.tenantName, runDate = comp.compRunDate ) }}" method="POST">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <div class="row border border-left-1 border-light border-3 col ms-3 me-3 mt-2">
+                <div class="col col-xs-2 order-1 mb-2 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:700px">
+                        <legend></legend>
+                        <h6><span class="label label-default form-control-md" for ="tenant-name" ><strong>Database</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="tenant-name" name="tenant-name" value = "{{comp.header.tenantName}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md" for ="opco" ><strong>OPCO</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="opco" name="opco" value = "{{comp.header.opco}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Comp Run Date</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="compRunDate" name="compRunDate" value = "{{comp.header.compRunDate}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Environment</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="env" name="env" value = "{{comp.header.env|upper}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>DB Technology</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="dbTechnology" name="dbTechnology" value = "{{comp.header.dbTechnology|upper}}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0">
+                    <fieldset class="mt-1 p-1" style="width:800px; float:left;">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md"><strong>Compliance Status</strong></span></h6>
+                        {% if comp.header.complianceStatus|upper =="COMPLIANT" or comp.header.complianceStatus|upper =="COMPLIANT AT-RISK"%}
+                            <input class="form-control form-control-md bg-success text-white" type="text" id="complianceStatus" name="complianceStatus" value = "{{comp.header.complianceStatus}}" readonly disabled>
+                        {% elif comp.header.complianceStatus|upper =="AT-RISK" %}
+                            <input class="form-control form-control-md bg-warning text-white" type="text" id="complianceStatus" name="complianceStatus" value = "{{comp.header.complianceStatus}}" readonly disabled> 
+                        {% elif comp.header.complianceStatus|upper =="NON-COMPLIANT" %}
+                            <input class="form-control form-control-md bg-danger text-white" type="text" id="complianceStatus" name="complianceStatus" value = "{{comp.header.complianceStatus}}" readonly disabled> 
+                        {% endif %}                        
+                        <h6><span class="label label-default form-control-md"><strong>Total Compliant</strong></span></h6>
+                        <input class="form-control form-control-md bg-success text-white" type="text" id="totalComplianceCount" name="totalComplianceCount" value = "{{comp.header.totalComplianceCount}} " readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Total Compliance (At Risk) </strong></span></h6>
+                        <input class="form-control form-control-md bg-warning text-white" type="text" id="totalAtRiskCount" name="totalAtRiskCount" value = "{{comp.header.totalAtRiskCount}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Total Non-Compliant</strong></span></h6>
+                        {% if comp.header.totalNonComplianceCount == 0 %}
+                            <input class="form-control form-control-md bg-danger text-white" type="text" id="totalNonComplianceCount" name="totalNonComplianceCount" value = "{{comp.header.totalNonComplianceCount}}" readonly disabled>
+                        {% else %}
+                            <input class="form-control form-control-md bg-danger text-white" type="text" id="totalNonComplianceCount" name="totalNonComplianceCount" value = "{{comp.header.totalNonComplianceCount}} ( {{comp.header.nonComplianceTasks|join(', ')}} )" readonly disabled>
+                        {% endif %}
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+        <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-comp-task-tab" data-bs-toggle="pill" data-bs-target="#pills-comp-task" type="button" role="tab" aria-controls="pills-comp-task" aria-selected="true">Compliance Tasks</button>
+          </li>
+        </ul>
+        <div class="tab-pane fade show active" id="pills-comp-task" role="tabpanel" aria-labelledby="pills-comp-task-tab">
+            {% if 'compTasksData' in comp %}
+                <div id="comptasks" class="container-fluid">
+                    <table id="compTasksTable" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> Action </th>
+                                {% for header in comp.compTasksHeading %}
+                                    <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in comp.compTasksData %}
+                                <tr>
+                                    <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                        {% if row[1]|lower == "member" %}
+                                            <span class="btn btn-sm btn-outline-secondary btn-view-tenant" role="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Tenant member details"><i class="fas fa-eye"></i></span>
+                                        {% else %}
+                                            <span class="btn btn-sm btn-outline-secondary btn-view-tenant" role="button" data-bs-toggle="tooltip" data-bs-placement="right" title="Tenant details"><i class="fas fa-eye"></i></span> 
+                                        {% endif %}
+                                    </td>                                    
+                                    {% for cell in row %}
+                                        {% if loop.index == 4 %}
+                                            {% if cell|upper == "COMPLIANT" %}
+                                                <td class="text-nowrap bg-success" style="cursor:default"> {{ cell }} </td>
+                                            {% elif cell|upper == "AT-RISK" %}
+                                                <td class="text-nowrap bg-warning" style="cursor:default"> {{ cell }} </td>
+                                            {% elif cell|upper == "NON-COMPLIANT" %}
+                                                <td class="text-nowrap bg-danger" style="cursor:default"> {{ cell }} </td>
+                                            {% else %}
+                                                <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                            {% endif %}
+                                        {% elif loop.index == 5 %}
+                                            <td class="text-wrap" style="cursor:default"> {{ cell }} </td>
+                                        {% else %}
+                                            <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                </div>
+            {% endif %}
+            <script>
+                $('#compTasksTable').DataTable();
+
+                $(document).on('click',".btn-view-tenant", function(click){
+                    click.stopPropagation();
+                    click.preventDefault();
+
+                    var currentRow = $(this).closest('tr')
+                    var currentRow=$(this).closest("tr");
+                    var tenantType = currentRow.find("td:eq(2)").text().trim();
+                    var tenant = currentRow.find("td:eq(1)").text().trim();
+                    if (tenantType == "MEMBER") {
+                        var ajaxCall = {"endPoint" : "viewTenantMember", "args" : {"tenantMemberId": tenant.trim()}};
+                    } else {
+                        var ajaxCall = {"endPoint" : "viewTenant", "args" : {"tenantName": tenant.trim()}};
+                    };
+                    console.log("tenant type " + tenantType);
+                    console.log("tenant" + tenant);                    
+                    //console.log("endpoint >>> " + endPoint + " tenant >>> " + tenant);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify(ajaxCall),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        if(response){
+                            console.log(response);
+                            console.log("redirect >>> " + response.redirect);
+                            window.location.href=response.redirect;
+                        };
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                });
+            </script>
+        </div>
+        <!--<button class="btn btn-lg btn-primary btn-block mt-3" style="float: right;" type="submit" href="{{url_for('compliances')}}">OK</button>-->
+        <a href="{{url_for('compliances')}}" class="btn btn-lg btn-dark btn-block mt-3" style="float: right;" type="submit" role="button">OK</a>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='missing-data.png')}}" class="img-fluid mt-5" style="width: 300px;">
+            <h1>Data is missing !! </h1>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

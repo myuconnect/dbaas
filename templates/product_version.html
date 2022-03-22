@@ -1,0 +1,86 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Database Product Version)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+
+    <div class = "row no-gutters mx-auto pl-1 mt-3">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <!--<h1 class="text-center"> Admin Roster </h1>-->
+        <form method="POST" action = "{{ url_for('product_version') }}">
+            {{ form.csrf_token() }}
+            {{ form.hidden_tag() }}
+            <div>
+                <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+                {{ form.dbTechnology(class="me-5",id="db-tech-opco") }}
+                <input type="submit" class="me-5 d-inline-block btn btn-primary btn-md" data-bs-toggle="tooltip" data-bs-placement="top"title="Search compliance tasks" value="Apply">
+                <label class="me-5 d-inline-block" style='float: right;'>
+                    <!--<button class="btn btn-outline-primary btn-md"><i class="fas fa-plus-square"></i></button>-->
+                    <a href="{{ url_for('new_product_version') }}" class="btn btn-outline-primary btn-md" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="New product version"><i class="fas fa-plus-square"></i></a>
+                </label>
+            </div>
+            <div class="mt-5"></div> <!-- empty line -->
+            <!-- table-responsive is needed for td class text-nowrap to be used -->
+            <table id="productVerTable" class="table table-sm table-bordered table-responsive table-hover" border="1" style="width:100%">
+                <thead class="table-primary">
+                    <tr>
+                        <th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th>
+                        {% for header in headings %}
+                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="table-light">
+                    {% for row in data %}
+                        <tr>
+                            <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                <span class="btn btn-sm btn-outline-secondary btn-view-tenant-compliance" role="button"><i class="fas fa-eye"></i></span>
+                            </td>
+                            {% for cell in row %}
+                                <td class="text-nowrap"> {{ cell }} </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script type="text/javascript">
+                $('#productVerTable').DataTable();
+                $(document).on('click',".btn-view-tenant-compliance", function(click){
+                    //var currentRow = $(this).closest('tr')
+                    var currentRow=$(this).closest("tr");
+                    var dbTechnology = currentRow.find("td:eq(1)").text(); // get the 4th cell value
+                    var baseVersion = currentRow.find("td:eq(2)").text(); // get the 3rd cell value
+                    //alert("view host " + hostName);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "viewProductVersion", "args" : {"dbTechnology": dbTechnology, "baseVersion" : baseVersion}}),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        if(response){
+                            console.log(response);
+                            window.location.href=response.redirect;
+                        }
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                    click.stopPropagation();
+                    click.preventDefault();
+                });
+            </script>
+        </form>
+    </div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+{% endblock script %}

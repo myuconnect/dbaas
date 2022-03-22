@@ -1,0 +1,132 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC DbaaS - View DB Admin
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+    {% if (admin is defined) and admin %}
+        <form id = "viewAdmin" method="POST" action = "{{ url_for('view_db_admin', employeeId = admin._id ) }}">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <div class="row border border-left-1 border-primary border-3 col ms-5 me-5 mt-5">
+                <div class = "row no-gutters mx-auto pl-1">
+                    <div class="col col-sm-5 order-1 mb-2 pb-0">
+                        <fieldset class="mt-2 p-1" style="width:600px">
+                            <legend></legend>
+                            <h6><span class="label label-default form-control-md" for ="employee_id"><strong>Employee&nbsp;Id</strong></span></h6>
+                            <input class="form-control form-control-md" type="text" id="employee_id" name="employee_id" value = "{{admin._id}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Name</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="employee_name" name="employee_name" value = "{{admin.name}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Status</strong></span></h6>
+                            {% if admin.status.upper() == "ACTIVE" %}
+                                <input class="form-control form-control-md bg-success text-white mb-2" type="text" id="status" name="status" value = "{{admin.status}}" readonly disabled>
+                            {% else %}
+                                <!--<input class="form-control form-control-md mb-2" type="text" id="status" name="status" value = "{{admin.status}}" readonly disabled> -->
+                                <input class="form-control form-control-md bg-danger text-white mb-2" type="text" id="status" name="status" value = "{{admin.status}}" readonly disabled>
+                            {% endif %}
+                        </fieldset>
+                    </div>
+                    <div class="col col-sm-5 order-2 mb-2 pb-0 me-5">
+                        <fieldset class="mt-2 p-1" style="width:600px">
+                            <legend></legend>
+                            <h6><span class="label label-default form-control-md"><strong>Location</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="location" name="location" value = "{{admin.location}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Email</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="email" name="email" value = "{{admin.email}}" readonly disabled>
+                            <h6><span class="label label-default form-control-md"><strong>Contact</strong></span></h6>
+                            <input class="form-control form-control-md mb-2" type="text" id="contact" name="contact" value = "{{admin.contact}}" readonly disabled>
+                        </fieldset>
+                    </div>
+                </div>
+                <ul class="nav nav-pills mb-3 mt-3 me-3 ms-3" id="pills-tab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="ms-5 me -5 nav-link active" id="pills-dbTechnologies-tab" data-bs-toggle="pill" data-bs-target="#pills-dbTechnologies" type="button" role="tab" aria-controls="pills-dbTechnologies" aria-selected="true">DB Technologies</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab" aria-controls="pills-history" aria-selected="false">History</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="ms-5 me-5 mx-auto tab-pane fade show active " id="pills-dbTechnologies" role="tabpanel" aria-labelledby="pills-dbTechnologies-tab">
+                        {% if 'dbTechData' in admin %}
+                            <table id="dbTechTable" class="mb-2 me-2 mt-2 ms-5 table table-md table-bordered table-responsive table-hover" style="width:40%; margin-right:10px;">
+                                <!-- style="width:100% float: left;margin-right:10px"> dispaly table side by side -->
+                                <thead class="table-primary">
+                                    <tr>
+                                        <!--<th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th> -->
+                                        {% for header in admin.dbTechHeadings %}
+                                            <th class = "text-nowrap col-sm-5" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody class="table-light">
+                                    {% for row in admin.dbTechData %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                {% if loop.index == 4 %}
+                                                    {% if cell|upper == "ACTIVE" %}
+                                                        <td class="text-nowrap text-success" style="cursor:default"> {{ cell }} </td>
+                                                    {% else %}
+                                                        <td class="text-nowrap text-danger" style="cursor:default"> {{ cell }} </td>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center">
+                                <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="ms-5 me-5 tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+                        {% if 'histData' in admin %}
+                            <table id="histTable" class="mb-2 me-2 mt-2 ms-5 table table-md table-striped table-bordered table-responsive table-hover" style="width:40%; left;margin-right:10px">
+                                <!-- style="width:100% float: left;margin-right:10px"> dispaly table side by side -->
+                                <thead class="table-primary">
+                                    <tr>
+                                        {% for header in admin.histHeadings %}
+                                            <th class = "col-sm-5" style="width: 20%"> {{ header }}  </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody class="table-light">
+                                    {% for row in admin.histData %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center">
+                                <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                            </div>
+                        {% endif %}
+                        <script>
+                            //$('#histTable').DataTable();
+                        </script>                    
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary mt-2 mb-3 me-5" style="float: right;">Ok</button>
+                </div>
+            </form>
+        </div>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width:auto;">
+        </div>
+    {% endif %}
+{% endblock content %}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+    
+{% endblock script %}

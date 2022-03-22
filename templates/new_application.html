@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC DbaaS - New Application
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+    <div class="container">
+        <form id = "newAppDB" method="POST" action = "{{ url_for('new_application' ) }}">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <div class="row g-3 border border-left-1 border-primary border-3 col-auto ms-3 me-3 mt-5" style="width: 70%;justify-content: center;">   
+                <div>
+                    <h6><span class="label label-default form-control-md mb-2 ms-5 mb-2" for="opco"><strong>Opco</strong></span></h6>
+                    {{ form.opco(class="form-control form-control-md mb-2 ms-5 me-5", style="width:50%",id="opco-select", required="required") }}
+                    <h6><span class="label label-default form-control-md mb-2 ms-5 mb-2"><strong>DB Technology</strong></span></h6>
+                    {{form.dbTechnology(class="form-control form-control-md mb-2 ms-5 me-5", style="width:50%", id="db-tech-select", required="required")}}
+
+                    <h6><span class="label label-default form-control-md mb-2 ms-5 mb-2" for="app-name"><strong>Application Name</strong></span></h6>
+                    {{ form.appName(class="form-control form-control-md mb-2 ms-5 me-5", style="width:50%",id="app-name", required="required") }}
+                    <h6><span class="label label-default form-control-md mb-2 ms-5 mb-2"><strong>LOB</strong></span></h6>
+                    {{form.lob(class="form-control form-control-md mb-2 ms-5 me-5", style="width:50%", id="lob", required="required")}}
+                    <h6><span class="label label-default form-control-md mb-2 ms-5 mb-2"><strong>Business Owner DL</strong></span></h6>
+                    {{form.busOwnerDL(class="form-control form-control-md mb-2 ms-5 me-5", style="width:50%", id="bus-owner-dl", required="required")}}
+                    <h6><span class="label label-default form-control-md mb-2 ms-5 mb-2"><strong>Application Owner DL</strong></span></h6>
+                    {{form.appOwnerDL(class="form-control form-control-md mb-2 ms-5 me-5", style="width:50%", id="app-owner-dl", required="required")}}
+                    <h6><span class="label label-default form-control-md mb-2 ms-5 mb-2"><strong>Application Owner AD Group</strong></span></h6>
+                    {{form.appOwnerAdGrp(class="form-control form-control-md mb-2 ms-5 me-5", style="width:50%", id="app-owner-adgrp", required="required")}}
+
+                    <button type = "submit" id = "save" class="btn btn-lg btn-primary btn-block mt-3 ms-3 mb-3" data-toggle="tooltip" data-placement="top" title="Save" style="float:right;">Onboard</button>
+                    <button type = "button" id = "cancel" class="btn btn-lg btn-secondary btn-block mt-3 ms-3 mb-3" data-toggle="tooltip" data-placement="top" title="Cancel" style="float:right;" onclick="window.location.href='{{ url_for('app_inventory')}}'">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+    
+{% endblock script %}
+

@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css')}}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Other Information)
+{% endblock title%}
+{% block content %}
+
+    <form class="col-lg-5 offset-lg-3" id="edit-host-form"  method="POST" action = "{{ url_for('feedback') }}">
+        {{ form.csrf_token }}
+        {{ form.hidden_tag() }}
+        <div class="row g-3 border border-left-1 border-primary border-3 col ms-3 me-3 mt-3">
+            <div class="align-items-center" style="justify-content: center">
+                <h6><span class="label label-default form-control-lg"><strong>Area</strong></span></h6>
+                {{ form.area(class="form-control form-control-md mb-3", style="width:180px;font-size:18px;", id="area-select") }}
+                <h6><span class="label label-default form-control-lg"><strong>Incident</strong></span></h6>
+                {{form.incidents(class="form-control form-control-md mb-2", readonly=true, disabled=true, id="incidents")}}
+                <h6><span class="label label-default form-control-lg"><strong>Change Orders</strong></span></h6>
+                {{form.changeOrders(class="form-control form-control-md mb-2", readonly=true, disabled=true, id="changeOrders")}}
+                <h6><span class="label label-default form-control-lg"><strong>DLs</strong></span></h6>
+                {{form.dls(class="form-control form-control-md mb-2", readonly=true, disabled=true, id="dls")}}
+                <h6><span class="label label-default form-control-lg" id="url-label"><strong>URL</strong></span></h6>
+                <div style="display:flex;">
+                    {{form.url(class="form-control form-control-md mb-2", style="font-size:18px;", readonly=true, disabled=true, id="url", type="url")}} 
+                    <button type = "button" id = "url_click" class="btn btn-primary mt-3 me-3 ms-3 mb-3" style="float:right;" onclick="window.location.href='{{ form.url.data }}'"><i class="fab fa-firefox"></i></button>
+                </div>
+                <h6><span class="label label-default form-control-lg"><strong>Escalations</strong></span></h6>
+                {{form.escalations(class="form-control form-control-md mb-2", readonly=true, disabled=true, id="escalations")}}
+                <h6><span class="label label-default form-control-lg"><strong>Other</strong></span></h6>
+                <div contenteditable="true">
+                    {{form.other(class="form-control form-control-md mb-3", readonly=true, disabled=true, id="other", rows=10)}}
+                </div>
+            </div>
+            <script type="text/javascript">
+                document.getElementById("area-select").addEventListener("change", populateArea);
+                function populateArea(){
+                    var myArea = document.getElementById("area-select").value;
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "getOtherInfoAreaData", "args" : {"area" : myArea} } ),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    console.log("request "+ request);
+                        //console.log(JSON.stringify(response));
+                        //console.table(JSON.stringify(response));
+                      request.done(function(response) {
+                        console.log(response);
+                        console.log(response);
+                      if (response.status == "Success"){
+                            document.getElementById("incidents").value = response.incidents;
+                            document.getElementById("changeOrders").value = response.changeOrders;
+                            document.getElementById("dls").value = response.dls;
+                            document.getElementById("url").value = response.url;
+                            document.getElementById("escalations").value = response.escalations;
+                            document.getElementById("other").value = response.other;
+                            document.getElementById("url_click").setAttribute("onclick", "location.href='" + response.url + "'");
+                        };
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                };
+            </script>
+        </div>
+    </form>
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

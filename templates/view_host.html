@@ -1,0 +1,354 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css')}}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Host Details - {{host.hostName}})
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    {% if (host is defined) and host %}
+        <form>
+            <div class="row border border-left-1 border-light border-3 col ms-3 me-3 mt-2">
+                <div class="col col-xs-2 order-1 mb-2 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend></legend>
+                        <!--<label class="col-sm-2 col-form-label" for="fname">OPCO:</label> -->
+                        <!-- <label class = "col-sm-2 col-form-label" for="fname">OPCO</label> -->
+                        <!-- <div class="form-group mt-3" style="display:flex; flex-direction: row;"> </div> This is to displau lable and text in same row -->
+                        <h6><span class="label label-default form-control-md" for ="host_id">Host&nbsp;Id&nbsp;</span></h6>
+                        <input class="form-control form-control-md" type="text" id="host_id" name="host_id" value = "{{host._id}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Host&nbsp;Name</span></h6>
+                        <input class="form-control form-control-md" type="text" id="host_name" name="host_name" value = "{{host.hostName}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Opco/Region</span></h6>
+                        <input class="form-control form-control-md" type="text" id="opco" name="opco" value = "{{host.opco}}/{{host.region}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">DC&nbsp;Location</span></h6>
+                        <!--<label for="email">DC Location</label>-->
+                        <input class="form-control form-control-md" type="text" id="dc_location" name="dc_location" value = "{{host.dcLocation}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Tier</span></h6>
+                        <!--<label for="email">DC Location</label>-->
+                        <input class="form-control form-control-md" type="text" id="domain" name="domain" value = "{{host.domain}}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md">Environment</span></h6>
+                        <!--<label for="birthday">Environment</label> -->
+                        <input class="form-control form-control-md" type="text" id="env" name="env" value = "{{host.env.upper()}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Tag</span></h6>
+                        <!--<label for="birthday">Environment</label> -->
+                        <input class="form-control form-control-md" type="text" id="tag" name="tag" value = "{{host.tag}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md">Status</span></h6>
+                        <!--<label for="birthday">Environment</label> -->
+                        {% if host.status|upper == "ACTIVE" %}
+                            <input class="bg-success form-control form-control-md" type="text" id="status" name="status" value = "{{host.status}}" readonly disabled>
+                        {% else %}
+                            <input class="bg-danger form-control form-control-md" type="text" id="status" name="status" value = "{{host.status}}" readonly disabled>
+                        {% endif %}                        
+                        <h6><span class="label label-default form-control-md">Database&nbsp;Technology</span></h6>
+                        <input class="form-control form-control-md" type="text" id="version" name="version" value = "{{host.dbTechnology.upper()}}" readonly>
+                        <h6><span class="label label-default form-control-md">OS</span></h6>
+                        <input class="form-control form-control-md" type="text" id="os" name="os" value = "{{host.os}}&nbsp;&nbsp;({{host.osVersion}})" readonly>
+                    </fieldset>
+                </div>
+                <!--
+                <div class="col col-xs-2 order-3">
+                    <fieldset>
+                        <legend class="w-auto"></legend>
+                        <h6>IP<span class="label label-default form-control-md">Address</span></h6>
+                        <input class="form-control form-control-md" type="text" id="os" name="os" value = "{{host.ipAddress}}" readonly>
+                        <h6><span class="label label-default form-control-md">OS</span></h6>
+                        <input class="form-control form-control-md" type="text" id="os" name="os" value = "" readonly>
+                        <h6><span class="label label-default form-control-md">CPU</span></h6>
+                        <input class="form-control form-control-md" type="text" id="cpu" name="cpu" value = "" readonly>
+                        <h6><span class="label label-default form-control-md">Memory</span></h6>
+                        <input class="form-control form-control-md" type="text" id="memory" name="memory" value = "" readonly>
+                        <h6>Storage <span class="label label-default form-control-md">Details</span></h6>
+                        <textarea class="form-control form-control-md " style="resize:none" rows="5" col="1" readonly>
+                             Storage
+                        </textarea>
+                    </fieldset>
+                </div>
+                -->
+                <div class="col col-xs-2 order-3 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md">IP&nbsp;Address</span></h6>
+                        <input class="form-control form-control-md" type="text" id="ip_address" name="ip_address" value = "{{host.ipAddress}}" readonly>
+                        <h6><span class="label label-default form-control-md">CPU</span></h6>
+                        <input class="form-control form-control-md" type="text" id="cpu" name="cpu" value = "{{host.cpu}}" readonly>
+                        <h6><span class="label label-default form-control-md">Memory</span></h6>
+                        <input class="form-control form-control-md" type="text" id="memory" name="memory" value = "Physical : {{host.physMemory}},&nbsp&nbsp&nbsp Swap : {{host.swapMemory}}" readonly>
+                        <h6><span class="label label-default form-control-md">Scan Enabled / Last Scan TS</span></h6>
+                        <!--<label for="birthday">Environment</label> -->
+                        <input class="form-control form-control-md" type="text" id="scan-enabled" name="scan-enabled" value = "{{host.scanEnabled.upper()}}" readonly disabled>
+                        <h6>Last <span class="label label-default form-control-md">Reboot</span></h6>
+                        <!--<label for="birthday">Last reboot</label> -->
+                        <input class="form-control form-control-md" type="text" id="last_reboot" name="last_reboot" value ="{{host.bootTime}}" readonly disabled>
+                        <!--
+                        <h6>Network <span class="label label-default form-control-md">Details</span></h6>
+                        <textarea class="form-control form-control-md " style="resize:none" rows="5" col="1" readonly>
+                             Networking details
+                        </textarea> -->
+                    </fieldset>
+                </div>
+            </div>
+            <!--
+            <div class="mt-3 d-md-flex justify-content-md-end">
+                <button class="btn btn-md btn-primary me-md-2">Edit</button>
+            </div>
+            -->
+        </form>
+        <!-- tab -->
+        <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-database-tab" data-bs-toggle="pill" data-bs-target="#pills-db" type="button" role="tab" aria-controls="pills-db" aria-selected="true">Database</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-storage-tab" data-bs-toggle="pill" data-bs-target="#pills-storage" type="button" role="tab" aria-controls="pills-storage" aria-selected="false">Storage</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-nic-tab" data-bs-toggle="pill" data-bs-target="#pills-nic" type="button" role="tab" aria-controls="pills-nic" aria-selected="false">NIC Details</button>
+          </li>
+          <!--<li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-passhist-tab" data-bs-toggle="pill" data-bs-target="#pills-passhist" type="button" role="tab" aria-controls="pills-passhist" aria-selected="false">Password</button>
+          </li> -->
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab" aria-controls="pills-history" aria-selected="false">History</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-db" role="tabpanel" aria-labelledby="pills-database-tab">
+                {% if 'dbData' in host %}
+                    <table id="dbDataTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%" data-page-length='5'>
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Action</th>
+                                {% for header in host.dbData.dbHeadings %}
+                                    <th> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in host.dbData.dbs %}
+                                <tr>
+                                    <td>
+                                        <span class="btn btn-sm btn-view-dbtenant" role="button" style="width:auto; align-content: center">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </td>
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <!-- must make sure that script is loaded before sort table function is called in layout.htm -->
+                    <script>
+                        $('#dbDataTable').DataTable({
+                            'columnDefs': [ {
+                                'targets': [0], // column index (start from 0)
+                                'orderable': false // set orderable false for selected columns
+                             }]
+                        });
+                        
+                        $(document).on('click',".btn-view-dbtenant", function(e){
+                            var currentRow = $(this).closest('tr')
+                            var currentRow=$(this).closest("tr");
+                            var myTenantName = currentRow.find("td:eq(3)").text(); // get the qst cell value
+                            var request = $.ajax({
+                                url: '/processAjaxReq',
+                                data: JSON.stringify({"endPoint" : "viewTenant", "args" : {"tenantName": myTenantName}}),
+                                contentType: "application/json; charset=utf-8",
+                                //dataType: "json",
+                                type: 'POST'
+                            });
+                            request.done(function(response) {
+                                if(response){
+                                    console.log(response);
+                                    window.location.href=response.redirect;
+                                }
+                            });
+                            request.fail(function(jqXHR, textStatus, errorThrown) {
+                                console.warn(jqXHR.responseText)
+                                console.log(JSON.stringify(jqXHR));
+                                console.log( "Request failed: " + textStatus + errorThrown);
+                            });
+                            click.stopPropagation();
+                            click.preventDefault();
+                        });
+                        /*
+                            $('#dbDataTable tbody').on("click", "tr", function(click){
+                                var data = table.row( this ).data();
+                                var currentRow=$(this).closest("tr");
+                                var tenantName = currentRow.find("td:eq(2)").text(); // get the qst cell value
+                                userData = JSON.stringify({"endPoint" : "processAjaxReq", "tenantName": tenantName});
+
+                                var request = $.ajax({
+                                    url: '/processAjaxReq',
+                                    data: JSON.stringify({"endPoint" : "tenant", "args" : {"tenantName": tenantName}}),
+                                    contentType: "application/json; charset=utf-8",
+                                    //dataType: "json",
+                                    type: 'POST'
+                                });
+                                request.done(function(response) {
+                                    //window.location.href="/host.html";
+                                    if(response){
+                                        console.log(response);
+                                        if (response.redirect != "#"){
+                                            window.location.href=response.redirect;    
+                                        }
+                                    }
+                                    else {
+                                        $('#response').text(JSON.stringify(response));
+                                    } 
+                                });
+                                request.fail(function(jqXHR, textStatus, errorThrown) {
+                                    console.warn(jqXHR.responseText)
+                                    console.log(JSON.stringify(jqXHR));
+                                    console.log( "Request failed: " + textStatus + errorThrown);
+                                });
+                                click.stopPropagation();
+                                click.preventDefault();
+                            });
+                        });
+                        */
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="pills-storage" role="tabpanel" aria-labelledby="pills-storage-tab">
+                {% if 'fsData' in host %}
+                    <table id="storageTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in host.fsData.fsHeadings %}
+                                    <th data-sortable="true"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in host.fsData.fsData %}
+                                <tr class="clickable-row">
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        $('#storageTable').DataTable();
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="pills-nic" role="tabpanel" aria-labelledby="pills-nic-tab">
+                {% if 'nicDetails' in host %}
+                    <table id="nicTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in host.nicDetails.nicHeadings %}
+                                    <th data-sortable="true"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in host.nicDetails.nicData %}
+                                <tr class="clickable-row">
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        $('#nicTable').DataTable();
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+                {% if 'history' in host %}
+                    <table id="histTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in host.history.histHeadings %}
+                                    <th data-sortable="true"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in host.history.histData %}
+                                <tr class="clickable-row">
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        $('#histTable').DataTable();
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="pills-passhist" role="tabpanel" aria-labelledby="pills-passhist-tab">
+                {% if 'passHistory' in host %}
+                    <table id="histTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in host.history.histHeadings %}
+                                    <th data-sortable="true"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in host.history.histData %}
+                                <tr class="clickable-row" data-href="host">
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        $('#histTable').DataTable();
+                    </script>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{{url_for('hosts')}}" class="btn btn-lg btn-dark btn-block mt-3" style="float: right;" type="submit" role="button">OK</a>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+        </div>
+    {% endif %}               
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

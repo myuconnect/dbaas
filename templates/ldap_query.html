@@ -1,0 +1,198 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (LDAP)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+
+    <div class = "row no-gutters mx-auto pl-1 mt-3">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <!--<h1 class="text-center"> Admin Roster </h1>-->
+        <form method="POST" action = "{{ url_for('ldap_query') }}">
+
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+
+                <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Entity:</strong></label>
+                {{ form.entityType(class="d-inline-block",style="width:200px;font-size:18px;",id="entity-type-select") }}
+                {{ form.domain(class="d-inline-block",style="width:200px;font-size:18px;",id="domain-select") }}
+                {{ form.searchAttr(class="d-inline-block mt-3",style="width:200px;font-size:18px", disabled="true", id="search-attr-select") }}
+                {{ form.entity(class="d-inline-block",placeholder = "Group/User attribute",style="width:300px;font-size:18px;", id="entity") }}                
+
+            <label class="d-inline-block"> </label>
+            <input type="submit" class="me-3 btn btn-primary btn-md" value="Search">
+            <div class="mt-3"></div> <!-- empty line -->
+            {% if groupResults is defined and groupResults  %}
+                <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-general-tab" data-bs-toggle="pill" data-bs-target="#pills-general" type="button" role="tab" aria-controls="pills-general" aria-selected="true">General</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-member-tab" data-bs-toggle="pill" data-bs-target="#pills-member" type="button" role="tab" aria-controls="pills-member" aria-selected="false">Member Details</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-general" role="tabpanel" aria-labelledby="pills-general-tab">                    
+                        <div class="border border-primary border-1 row col mx-auto">
+                            <div class="col col-xs-2 order-1 mb-1 pb-0" style="text-align: left">
+                                <fieldset class="ms-5 mt-3 mb-5 p-1" style="width:500px">
+                                    <h6><span class="label label-default form-control-md" for ="name-label"><strong>Name</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="name" name="host_id" value = "{{groupResults.general.name}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="desc-label"><strong>Description</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="desc" name="host_id" value = "{{groupResults.general.description}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="cn-label"><strong>CN</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="cn" name="cn" value = "{{groupResults.general.cn}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="dn-label"><strong>DN</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="dn" name="dn" value = "{{groupResults.general.dn}}" readonly disabled>
+                                </fieldset>
+                            </div>
+                            <div class="col col-xs-2 order-2 mb-1 pb-0" style="">
+                                <fieldset class="ms-5 mt-3 mb-5 p-1" style="width:600px">
+                                    <h6><span class="label label-default form-control-md" for ="sam-acct-name-label"><strong>Object Category</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="sam-acct-name" name="sam-acct-name" value = "{{groupResults.general.objectCategory}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="sam-acct-name-label"><strong>sAMAccountName</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="sam-acct-name" name="sam-acct-name" value = "{{groupResults.general.sAMAccountName}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="created-label"><strong>Created</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="created" name="created" value = "{{groupResults.general.createdTS}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="updated-label"><strong>Updated</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="updated" name="updated" value = "{{groupResults.general.updatedTS}}" readonly disabled>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-member" role="tabpanel" aria-labelledby="pills-member-tab">                    
+                        <table id="results-member-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if groupResults.memberDetailsHeadings is defined and groupResults.memberDetailsHeadings %}
+                                        {% for header in groupResults.memberDetailsHeadings %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if groupResults.memberData is defined and groupResults.memberData %}
+                                    {% for row in groupResults.memberData %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% elif userResults is defined and userResults %}
+                <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-general-tab" data-bs-toggle="pill" data-bs-target="#pills-general" type="button" role="tab" aria-controls="pills-general" aria-selected="true">Result</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-general" role="tabpanel" aria-labelledby="pills-general-tab">                    
+                        <div class="border border-primary border-1 row col mx-auto">
+                            <div class="col col-xs-2 order-1 mb-1 pb-0" style="text-align: left">
+                                <fieldset class="ms-5 mt-3 mb-5 p-1" style="width:90%;">
+                                    <h6><span class="label label-default form-control-md" for ="employee-number-label"><strong>Employee #</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="employee-number" name="employee-number" value = "{{userResults.employeeNumber}}" readonly disabled>
+                                    <!--
+                                    <input class="form-control form-control-md mb-2" type="text" id="employee-number" name="employee-number" value = "{{userResults.zzEmployeeID}}" readonly disabled> -->
+                                    <h6><span class="label label-default form-control-md" for ="company-label"><strong>Company</strong></span></h6>
+                                    <input class="form-control form-control-md" type="text" id="company" name="company" value = "{{userResults.company}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="employee-name-label"><strong>Name</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="employee-name" name="employee-name" value = "{{userResults.displayName}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="email-label"><strong>Email</strong></span></h6>
+                                    {% if userResults.employeeNumber and userResults.employeeNumber %}
+                                        <input class="form-control form-control-md mb-2" type="text" id="email" name="email" value = "{{userResults.mail}}" readonly disabled>
+                                    {% else %}
+                                        <input class="form-control form-control-md mb-2" type="text" id="email" name="email" value = "{{userResults.zzEmail}}" readonly disabled>
+                                    {% endif %}
+                                    <h6><span class="label label-default form-control-md" for ="contact-label"><strong>Contact#</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="contact" name="contact" value = "{{userResults.telephoneNumber}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="location-label"><strong>Location</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="location" name="location" value = "{{userResults.physicalDeliveryOfficeName}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="user-principal-label"><strong>User Principal Name</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="user-principal" name="user-principal" value = "{{userResults.userPrincipalName}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="dn-label"><strong>DN</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="dn" name="dn" value = "{{userResults.distinguishedName}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="zz-employee-id-label"><strong>ZZ Employee Id</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="zz-employee-id" name="zz-employee-id" value = "{{userResults.zzEmployeeID}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md" for ="comments-label"><strong>Comments</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="comments" name="comments" value = "{{userResults.description}}" readonly disabled>
+                                </fieldset>
+                            </div>
+                            <div class="col col-xs-2 order-2 mb-1 pb-0" style="text-align: left;">
+                                <fieldset class="mt-3 mb-5 p-1" style="width:80%;">
+                                    <h6><span class="label label-default form-control-md" for ="last-pass-reset-label"><strong>Last Password Reset TS</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="last-pass-reset" name="last-pass-reset" value = "{{userResults.pwdLastSet}}" readonly disabled>
+
+                                    <h6><span class="label label-default form-control-md mb-2" for ="object-category-label"><strong>Object Category</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="object-category" name="object-category" value = "{{userResults.objectCategory}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md mb-2" for ="sam-acct-name-label"><strong>sAMAccountName</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="sam-acct-name" name="sam-acct-name" value = "{{userResults.sAMAccountName}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md mb-2" for ="created-label"><strong>Created</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="created" name="created" value = "{{userResults.whenCreated}}" readonly disabled>
+                                    <h6><span class="label label-default form-control-md mb-2" for ="updated-label"><strong>Last Logon TS</strong></span></h6>
+                                    <input class="form-control form-control-md mb-2" type="text" id="updated" name="updated" value = "{{userResults.lastLogonTimestamp}}" readonly disabled>
+                                    <label for="memberOf"><strong>Member Of</strong></label>
+                                        <table id="results-member-table" class="table table-sm table-bordered table-responsive table-hover" style="width:auto">
+                                            <tbody class="table-light">
+                                                {% if userResults.memberOf is defined and userResults.memberOf %}
+                                                    {% for row in userResults.memberOf %}
+                                                        <tr>
+                                                            <td class="text-nowrap"> {{ row }} </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </tbody>
+                                        </table>                                    
+                                </fieldset>
+                            </div>
+                            <!--
+                            <div class="col col-xs-2 order-2 mb-1 pb-0" style="">
+                                <fieldset class="ms-5 mt-3 mb-5 p-1" style="width:400px">
+                                </fieldset>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>                
+            {% endif %}
+            <script>
+                // display/hide domain/search attr based on entity type selection
+                $(document).ready(function(){
+                    dispEntityTypeSelection();
+                });
+                {% if groupResults.memberData is defined and groupResults.memberData %}
+                    $('#results-member-table').DataTable();
+                {% endif %}
+                document.getElementById("entity-type-select").addEventListener("change",dispEntityTypeSelection);
+                
+                function dispEntityTypeSelection(){
+                    var entityType = document.getElementById("entity-type-select");
+                    var searchAttr = document.getElementById("search-attr-select");
+                    var domain = document.getElementById("domain-select");
+                    if (entityType.value == "group"){
+                        //console.log(entityType.value);
+                        searchAttr.disabled = true;
+                        //domain.disabled=false;
+                    } else {
+                        //console.log(entityType.value);
+                        searchAttr.disabled = false;
+                        //domain.disabled=false;
+                    };
+
+                };
+            </script>
+        </form>
+    </div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+{% endblock script %}

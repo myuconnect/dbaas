@@ -1,0 +1,190 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Comp Task Details)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+
+    <div class = "row no-gutters mx-auto pl-1 mt-3">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <!--<h1 class="text-center"> Admin Roster </h1>-->
+        <form method="POST" action = "{{ url_for('comp_tasks') }}">
+            {{ form.csrf_token() }}
+            {{ form.hidden_tag() }}
+            <div>
+                <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+                {{ form.opco(class="me-5",id="db-tech-opco") }}
+                {{ form.compTask(class="me-5",id="comp-tech-select") }}
+                {{ form.dbTechnology(class="me-5",id="db-tech-select") }}
+                {{ form.tenant(class="me-5",id="db-tenant-select", type="search") }}
+                <input type="submit" class="me-5 d-inline-block btn btn-primary btn-md" data-bs-toggle="tooltip" data-bs-placement="top"title="Search compliance tasks" value="Apply">
+
+                <label class="me-5 d-inline-block" style='float: right;'>
+                    <!--<button class="btn btn-outline-primary btn-md"><i class="fas fa-plus-square"></i></button>-->
+                    <a href="{{ url_for('new_comp_tasks') }}" class="btn btn-outline-primary btn-md" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="New Compliance task"><i class="fas fa-plus-square"></i></a>
+                    <a href="{{ url_for('bulk_update_comp_tasks') }}" class="btn btn-outline-primary btn-md" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Bulk update pending compliance task(s)">Bulk Update</a>
+                </label>
+            </div>
+            <div class="mt-5"></div> <!-- empty line -->
+            <!-- table-responsive is needed for td class text-nowrap to be used -->
+            <table id="compHistoryTable" class="table table-sm table-bordered table-responsive table-hover" border="1" style="width:100%">
+                <thead class="table-primary">
+                    <tr>
+                        <th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th>
+                        {% for header in headings %}
+                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="table-light">
+                    {% for row in data %}
+                        <tr>
+                            <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                <span class="btn btn-sm btn-outline-secondary btn-view-comptask" role="button"><i class="fas fa-eye"></i></span>
+                                {% if row[9]|upper  != "VALID" %}
+                                    <span class="btn btn-sm btn-outline-primary btn-edit-comptask" role="button"><i class="fas fa-edit"></i></span>
+                                {% endif %}
+                            </td>
+                            {% for cell in row %}
+                                {% if loop.index == 7 %}
+                                    {% if cell|string|upper == "SUCCESS" %}
+                                        <td class="bg-success text-nowrap"> {{ cell }} </td>
+                                    {% else %}
+                                        <td class="text-nowrap"> {{ cell }} </td>
+                                    {% endif %}
+                                {% elif loop.index == 10 %}
+                                    {% if cell|string|upper == "PENDING" %}
+                                        <td class="bg-info text-nowrap"> {{ cell }} </td>
+                                    {% elif cell|string|upper in ["CLOSED","VALID"] %}
+                                        <td class="bg-success text-nowrap"> {{ cell }} </td>
+                                    {% else %}
+                                        <td class="text-nowrap"> {{ cell }} </td>
+                                    {% endif %}
+                                <!-- elif loop.index == 7 <td class="text-wrap" style="width: 10rem; max-width:80px;"> {{ cell }} </td>-->
+                                {% else %}
+                                    <td class="text-nowrap"> {{ cell }} </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        <script>
+            $('#compHistoryTable').DataTable();
+            document.getElementById("db-tech-select").addEventListener("change", populateDatabase4Tech);
+            //document.getElementById("db-tenant-select").addEventListener("change", getTenantDetails);
+            // populate tenantname for a given db technology
+            function populateDatabase4Tech(){
+                var dbTechElem = document.getElementById("db-tech-select");
+                var tenantSelect = document.getElementById("db-tenant-select");
+                var myDBTechnology = dbTechElem.value;
+                //alert("db tech selected 1 " + myDBTechnology);
+                var request = $.ajax({
+                    url: '/processAjaxReq',
+                    data: JSON.stringify({"endPoint" : "getDBLists4Tech", "args" : {"dbTechnology": myDBTechnology} } ),
+                    contentType: "application/json; charset=utf-8",
+                    //dataType: "json",
+                    type: 'POST'
+                });
+                request.done(function(response) {
+                    //window.location.href="/host.html";
+                    if(response){
+                        console.log(response);
+                        console.log(JSON.stringify(response));
+                        console.table(JSON.stringify(response));
+                        var optionHTML = "";
+                        if (response.length != 0){
+                            for (i = 0; i < response.length; i++){
+                                optionHTML += '<option value=' + response[i].id + ">" + response[i].id + '</option>';                                    
+                            };
+                        };
+                        //alert("option html "+ optionHTML)
+                        if (optionHTML){
+                            tenantSelect.innerHTML = optionHTML;
+                        }else{
+                            // we didnt get any databse for db technology selected
+                            //alert("optionHTML is null")
+                            tenantSelect.innerHTML = "                 ";
+                            //$('#compHistoryTable').data.reload();
+                        };
+                        console.log("optionHtml >>> " + optionHTML);
+                        console.log("tenantSelect >>> " + tenantSelect);    
+
+                        //window.location.href=response.redirect;
+                    };
+                    //$('#response').text(JSON.stringify(response)); 
+                });
+                request.fail(function(jqXHR, textStatus, errorThrown) {
+                    console.warn(jqXHR.responseText)
+                    console.log(JSON.stringify(jqXHR));
+                    console.log( "Request failed: " + textStatus + errorThrown);
+                    tenantSelect.innerHTML = "                            ";
+                });
+            };
+            $(document).on('click',".btn-view-comptask", function(e){
+                //var currentRow = $(this).closest('tr')
+                var currentRow=$(this).closest("tr");
+                var compTaskId = currentRow.find("td:eq(3)").text(); // get the 1st cell value
+                //alert("view tenant " + tenantName);
+                var request = $.ajax({
+                    url: '/processAjaxReq',
+                    data: JSON.stringify({"endPoint" : "viewCompTask", "args" : {"compTaskId": compTaskId}}),
+                    contentType: "application/json; charset=utf-8",
+                    //dataType: "json",
+                    type: 'POST'
+                });
+                request.done(function(response) {
+                    //window.location.href="/host.html";
+                    if(response){
+                        console.log(response);
+                        window.location.href=response.redirect;
+                    }
+                    //$('#response').text(JSON.stringify(response)); 
+                });
+                request.fail(function(jqXHR, textStatus, errorThrown) {
+                    console.warn(jqXHR.responseText)
+                    console.log(JSON.stringify(jqXHR));
+                    console.log( "Request failed: " + textStatus + errorThrown);
+                });
+                click.stopPropagation();
+                click.preventDefault();
+            });
+            $(document).on('click',".btn-edit-comptask", function(e){
+                //var currentRow = $(this).closest('tr')
+                var currentRow=$(this).closest("tr");
+                var compTaskId = currentRow.find("td:eq(3)").text(); // get the 1st cell value
+                //alert("view tenant " + tenantName);
+                var request = $.ajax({
+                    url: '/processAjaxReq',
+                    data: JSON.stringify({"endPoint" : "editCompTask", "args" : {"compTaskId": compTaskId}}),
+                    contentType: "application/json; charset=utf-8",
+                    //dataType: "json",
+                    type: 'POST'
+                });
+                request.done(function(response) {
+                    //window.location.href="/host.html";
+                    if(response){
+                        console.log(response);
+                        window.location.href=response.redirect;
+                    }
+                    //$('#response').text(JSON.stringify(response)); 
+                });
+                request.fail(function(jqXHR, textStatus, errorThrown) {
+                    console.warn(jqXHR.responseText)
+                    console.log(JSON.stringify(jqXHR));
+                    console.log( "Request failed: " + textStatus + errorThrown);
+                });
+                click.stopPropagation();
+                click.preventDefault();
+            });
+        </script>
+    </div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+{% endblock script %}

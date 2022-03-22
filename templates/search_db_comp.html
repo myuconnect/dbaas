@@ -1,0 +1,693 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Search DB component)
+{% endblock title%}
+{% block content %}
+    <div class = "row no-gutters mx-auto pl-1 mt-3">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <!--<h1 class="text-center"> Admin Roster </h1>-->
+        <form method="POST" action = "{{ url_for('search_db_comp') }}">
+            {{ form.csrf_token() }}
+            {{ form.hidden_tag() }}
+            <div class= "border border-light border-2">
+                <div class="row col mx-auto">
+                    <div class="col col-xs-2 order-1 mb-1 pb-0" style="text-align: left">
+                        <fieldset class="mt-2 p-1" style="width:400px">
+                            <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md"><strong>Opco</strong></span></h6>
+                            {{form.opco(class="form-control me-3 dropdown-toggle", data_toggle="dropdown", id="opco-select", autofocus=true, required="required", )}}
+                            <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md"><strong>DB Technology</strong></span></h6>
+                            {{form.dbTechnology(class="form-control form-control-md required", id="db-tech-select", required="required")}}
+                            <label class="mt-3"><strong>Environment</strong></label>
+                            {{form.env(class="form-control me-3",id="env-select", required="required")}}
+                        </fieldset>
+                    </div>
+                    <div class="col col-xs-2 order-2 mb-1 pb-0" style="">
+                        <fieldset class="mt-2 p-1" style="width:500px">
+                            <h6 class="mt-2" align="left"><span class="mt-3 p-1 label label-default form-control-md"><strong>Databases</strong></span></h6>
+                            {{form.tenants(class="form-control form-control-md required", id="tenants-multi-select", size=10, required="required")}}
+                            {% if form.tenants.choices|length > 0 %}
+                                <h6 class="mt-3 me-3"><span id ="multi-tenant-select-button-label"><strong>Select All Databases</strong> {{ form.selectAllTenants(id="multi-tenant-select-button") }}</span></h6>
+                            {% else %}
+                                <h6 class="mt-3 me-3"><span id ="multi-tenant-select-button-label"><strong>Select All Databases</strong> {{ form.selectAllTenants(id="multi-tenant-select-button", disabled="true") }}</span></h6>
+                            {% endif %}
+                        </fieldset>
+                    </div>
+                    <div class="col col-xs-2 order-3 mb-1 pb-0" style="">
+                        <fieldset class="mt-2 p-1" style="width:400px">
+                            {% if form.tenants.choices|length > 0 %}
+                                <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id = "search-in-label"><strong>Search In</strong></span></h6>
+                                {{form.searchIn(class="form-control form-control-md required mb-3", id="search-in-select", placeholder="Only 1 database selection is allowed for live search", required="required")}}
+                                <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id = "search-comp-select-label"><strong>DB Component</strong></span></h6>
+                                {{form.searchComp(class="form-control form-control-md required mb-3", id="search-comp-select")}}
+                                {% if form.searchComp.data == "db.config" %}
+                                    <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id ="config-key-label"><strong>Config Keys</strong></span></h6>
+                                    {{form.dbConfigKey(class="form-control form-control-md required mb-3", id="db-config-key-select", style="display:block;")}}
+                                {% else %}
+                                    <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id ="config-key-label" style="display:none;"><strong>Config Keys</strong></span></h6>
+                                    {{form.dbConfigKey(class="form-control form-control-md required mb-3", id="db-config-key-select", style="display:none;")}}
+                                {% endif %}
+                                {% if form.searchComp.data == "db.config" or form.searchComp.data == "db.users" or form.searchComp.data == "db.roles" or form.searchComp.data == "db.database" %}
+                                    <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id="search-comp-value-label" style="display:block;"><strong>Component Value</strong></span></h6>
+                                    {{form.searchCompValue(class="form-control form-control-md required mb-3", id="search-comp-value", style="display:block;")}}
+                                {% else %}
+                                    <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id="search-comp-value-label" style="display:none;"><strong>Component Value</strong></span></h6>
+                                    {{form.searchCompValue(class="form-control form-control-md required mb-3", id="search-comp-value", style="display:none;")}}
+                                {% endif %}
+
+                            {% else %}
+                                <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id = "search-in-label"><strong>Search In</strong></span></h6>
+                                {{form.searchIn(class="form-control form-control-md required mb-3", id="search-in-select", placeholder="Only 1 database selection is allowed for live search", disabled="true")}}
+                                <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id = "search-comp-select-label"><strong>DB Component</strong></span></h6>
+                                {{form.searchComp(class="form-control form-control-md required mb-3", id="search-comp-select", disabled ="true")}}
+                                <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id ="config-key-label"><strong>Config Keys</strong></span></h6>
+                                {{form.dbConfigKey(class="form-control form-control-md required mb-3", id="db-config-key-select", disabled="true")}}
+                                <h6 class="mt-3" align="left"><span class="mt-3 p-1 label label-default form-control-md" id="search-comp-value-label"><strong>Component Value</strong></span></h6>
+                                {{form.searchCompValue(class="form-control form-control-md required mb-3", id="search-comp-value", disabled="true")}}
+                            {% endif %}
+                            <!--{% if form.tenants.choices|length > 0 %}-->
+                            <input type="submit" class="btn btn-primary btn-lg" type="applyFilter" style="float: right;" value="Search" id="search">
+                            <!--{% else %}
+                                <input type="submit" class="btn btn-primary btn-lg" type="applyFilter" style="float: right;" value="Search" id="search" disabled="true">
+                            {% endif %}                      -->
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            {% if form.searchComp.data|lower == "server.status" %}
+                <!-- tab -->
+                <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-memory-tab" data-bs-toggle="pill" data-bs-target="#pills-memory" type="button" role="tab" aria-controls="pills-memory" aria-selected="true">Memory</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-cache-tab" data-bs-toggle="pill" data-bs-target="#pills-cache" type="button" role="tab" aria-controls="pills-cache" aria-selected="false">Cache</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-capacity-tab" data-bs-toggle="pill" data-bs-target="#pills-capacity" type="button" role="tab" aria-controls="pills-capacity" aria-selected="false">Capacity</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-connection-tab" data-bs-toggle="pill" data-bs-target="#pills-connection" type="button" role="tab" aria-controls="pills-connection" aria-selected="false">Connections</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-perf-tab" data-bs-toggle="pill" data-bs-target="#pills-perf" type="button" role="tab" aria-controls="pills-perf" aria-selected="false">Perf</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-lock-tab" data-bs-toggle="pill" data-bs-target="#pills-lock" type="button" role="tab" aria-controls="pills-lock" aria-selected="false">Lock</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-cursor-tab" data-bs-toggle="pill" data-bs-target="#pills-cursor" type="button" role="tab" aria-controls="pills-cursor" aria-selected="false">Cursor</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-session-tab" data-bs-toggle="pill" data-bs-target="#pills-session" type="button" role="tab" aria-controls="pills-session" aria-selected="false">Session</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-transaction-tab" data-bs-toggle="pill" data-bs-target="#pills-transaction" type="button" role="tab" aria-controls="pills-transaction" aria-selected="false">Transactions</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-memory" role="tabpanel" aria-labelledby="pills-memory-tab">
+                        <table id="results-memory-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.memory is defined and results.headings.memory %}
+                                        {% for header in results.headings.memory %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.memory is defined and results.data.memory %}
+                                    {% for row in results.data.memory %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.memory is defined and results.data.memory %}
+                                $('#results-memory-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-cache" role="tabpanel" aria-labelledby="pills-cache-tab">
+                        <table id="results-cache-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.cache is defined and results.headings.cache %}
+                                        {% for header in results.headings.cache %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.cache is defined and results.data.cache %}
+                                    {% for row in results.data.cache %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.cache is defined and results.data.cache %}
+                                $('#results-cache-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-capacity" role="tabpanel" aria-labelledby="pills-capacity-tab">
+                        <table id="results-capacity-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.capacity is defined and results.headings.capacity %}
+                                        {% for header in results.headings.capacity %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.capacity is defined and results.headings.capacity %}
+                                    {% for row in results.data.capacity %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.capacity is defined and results.headings.capacity %}
+                                $('#results-capacity-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-connection" role="tabpanel" aria-labelledby="pills-connection-tab">
+                        <table id="results-connection-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.connections is defined and results.headings.connections %}
+                                        {% for header in results.headings.connections %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.connections is defined and results.data.connections %}
+                                    {% for row in results.data.connections %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.connections is defined and results.data.connections %}
+                                $('#results-connection-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-perf" role="tabpanel" aria-labelledby="pills-perf-tab">
+                        <table id="results-perf-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.perf is defined and results.headings.perf %}
+                                        {% for header in results.headings.perf %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.perf is defined and results.data.perf %}
+                                    {% for row in results.data.perf %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.perf is defined and results.data.perf %}
+                                $('#results-perf-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-lock" role="tabpanel" aria-labelledby="pills-lock-tab">
+                        <table id="results-lock-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.lock is defined and results.headings.lock %}
+                                        {% for header in results.headings.lock %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.lock is defined and results.data.lock %}
+                                    {% for row in results.data.lock %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.lock is defined and results.data.lock %}
+                                $('#results-lock-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-cursor" role="tabpanel" aria-labelledby="pills-cursor-tab">
+                        <table id="results-cursor-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.cursor is defined and results.headings.cursor %}
+                                        {% for header in results.headings.cursor %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.cursor is defined and results.data.cursor %}
+                                    {% for row in results.data.cursor %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.cursor is defined and results.data.cursor %}
+                                $('#results-cursor-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-session" role="tabpanel" aria-labelledby="pills-session-tab">
+                        <table id="results-session-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.session is defined and results.headings.session %}
+                                        {% for header in results.headings.session %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.session is defined and results.data.session %}
+                                    {% for row in results.data.session %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.session is defined and results.data.session %}
+                                $('#results-session-table').DataTable();
+                            {% endif %}
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="pills-transaction" role="tabpanel" aria-labelledby="pills-transaction-tab">
+                        <table id="results-transaction-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    {% if results is defined and results and results.headings is defined and results.headings and results.headings.transaction is defined and results.headings.transaction %}
+                                        {% for header in results.headings.transaction %}
+                                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody class="table-light">
+                                {% if results is defined and results and results.data is defined and results.data and results.data.transaction is defined and results.data.transaction %}
+                                    {% for row in results.data.transaction %}
+                                        <tr>
+                                            {% for cell in row %}
+                                                <td class="text-nowrap"> {{ cell }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <script type="text/javascript">
+                            {% if results is defined and results and results.data is defined and results.data and results.data.transaction is defined and results.data.transaction %}
+                                $('#results-transaction-table').DataTable();
+                            {% endif %}
+                        </script>                        
+                    </div>
+                </div>
+            {% else %}
+                {% if results is defined and results and results.data is defined and results.data %}
+                    <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-results-tab" data-bs-toggle="pill" data-bs-target="#pills-results" type="button" role="tab" aria-controls="pills-results" aria-selected="true">Results</button>
+                      </li>
+                    </ul>            
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="pills-results" role="tabpanel" aria-labelledby="pills-results-tab">
+                            <table id="results-table" class="table table-sm table-bordered table-responsive table-hover" style="width:100%">
+                                <thead class="table-primary">
+                                    <tr>
+                                        {% if results is defined and results and results.headings is defined and results.headings %}
+                                            {% for header in results.headings %}
+                                                <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody class="table-light">
+                                    {% if results is defined and results and results.data is defined and results.data %}
+                                        {% for row in results.data %}
+                                            <tr>
+                                                {% set noWrapForList = ["current.op","top","log","conn.stats","replication.info"] %}
+                                                {% for cell in row %}
+                                                    {% if form.searchIn.data == "live" %}
+                                                        <td class="text-nowrap"> {{ cell }} </td>
+                                                    {% else %}
+                                                        <td class="text-wrap"> {{ cell }} </td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <script type="text/javascript">
+                {% if results is defined and results and results.data is defined and results.data %}
+                    $('#results-table').DataTable(
+                    //{
+                    //    'dom': 'Rlfrtip',
+                    //    "bAutoWidth": true
+                    // }
+                    );
+                {% endif %}
+                // executing function after page is fully loaded
+                $(document).ready(function(){
+                    if (document.getElementById("search-comp-select").value == "db.config"){
+                        document.getElementById('search-comp-value').style.display="none";
+                        document.getElementById('search-comp-value-label').style.display="none";
+                        document.getElementById('db-config-key-select').style.display="block";
+                        document.getElementById('config-key-label').style.display="block";
+                        //document.getElementById('search').disabled=true;                                    
+                    };
+                });
+
+                // executing function after page content is fully loaded
+                //document.addEventListener('load', finalizePageLoad);
+                /*
+                document.addEventListener('DOMContentLoaded', finalizePageLoad);
+
+                function finalizePageLoad(){
+                    var tenants = document.getElementById("tenants-multi-select");
+                    var searchButton = document.getElementById("search");
+                    //alert("finalizing page, total tenants " + tenants.length);
+                    if (tenants.selectedIndex >= 0) {
+                        //tenants.selectedIndex = 0;
+                        searchButton.disabled=false;
+                    } else {
+                        searchButton.disabled=true;                        
+                    }
+                };
+                */
+                // adding listener on change
+                document.getElementById("opco-select").addEventListener("change", populateDatabase);
+                document.getElementById("db-tech-select").addEventListener("change", populateDatabase);
+                document.getElementById("env-select").addEventListener("change", populateDatabase);
+                document.getElementById("search-in-select").addEventListener("change", refreshDBCompSearch);
+                //document.getElementById("tenants-multi-select").addEventListener("change", enableDisableSearch);
+
+                //document.getElementById("search-comp-select").addEventListener("change", compSelectChange);
+
+                var disableCompSearchValFor = ["oplog.size"];
+                var compSearch = document.getElementById("search-comp-select").value;
+                var tenants = document.getElementById('tenants-multi-select');
+
+                function populateDatabase(){
+                    var opco = document.getElementById("opco-select").value;
+                    var dbTechnology = document.getElementById("db-tech-select").value;
+                    var env = document.getElementById("env-select").value;
+                    var tenants = document.getElementById("tenants-multi-select");
+                    console.log("opco >>> "+ request + " db technology >>> " + dbTechnology + " env >>> " + env);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "getDBLists4Tech", "args" : {"opco" : opco, "dbTechnology": dbTechnology, "env" : env} } ),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    console.log("request "+ request);
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        console.log(response);
+                        if(response){
+                            console.log(response);
+                            console.log(JSON.stringify(response));
+                            console.table(JSON.stringify(response));
+                            var optionHTML = "";
+                            if (response.length != 0){
+                                for (i = 0; i < response.length; i++){
+                                    // ignoring all databases
+                                    if (response[i].id != "ALL"){
+                                        optionHTML += '<option value=' + response[i].id+ ">" + response[i].id + '</option>';
+                                    };
+                                };
+                            };
+                            if (optionHTML){
+                                tenants.innerHTML = optionHTML;
+                                tenants.selectedIndex = 0;
+                                document.getElementById("search-comp-select").disabled = false;
+                                document.getElementById("db-config-key-select").disabled = false;
+                                document.getElementById("search-comp-value").disabled = false;
+                                document.getElementById("multi-tenant-select-button").disabled = false;
+                                document.getElementById("multi-tenant-select-button").checked = false;
+                                //document.getElementById("search").disabled = false;
+                            }else{
+                                tenants.innerHTML = "                 ";
+                                document.getElementById("search-comp-select").disabled = true;
+                                document.getElementById("db-config-key-select").disabled = true;
+                                document.getElementById("search-comp-value").disabled = true;
+                                document.getElementById("multi-tenant-select-button").disabled = true;
+                                document.getElementById("multi-tenant-select-button").checked = false;
+                                //document.getElementById("search").disabled = true;
+                            };
+                            console.log("optionHtml >>> " + optionHTML);
+                            console.log("tenantSelect >>> " + tenants);    
+                        };
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                        tenants.innerHTML = "                            ";
+                    });
+                };
+                function refreshDBCompSearch(){
+                    var searchIn = document.getElementById("search-in-select").value;
+                    var compSearch = document.getElementById("search-comp-select");
+                    console.log("search in >>> "+ searchIn);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "getSearchCompForSearchIn", "args" : {"searchIn" : searchIn} } ),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    console.log("request "+ request);
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        console.log(response);
+                        if(response){
+                            console.log(response);
+                            console.log(JSON.stringify(response));
+                            console.table(JSON.stringify(response));
+                            var optionHTML = "";
+                            for (i = 0; i < response.length; i++){
+                                // ignoring all databases
+                                optionHTML += '<option value=' + response[i].id + ">" + response[i].display + '</option>';
+                            };
+                            compSearch.innerHTML = optionHTML;
+                            compSearch.selectedIndex = 0;
+                            console.log("optionHtml <" + optionHTML + " > for search in " + searchIn);
+                            // if this is live search, will disable select all option along with remove selectoin of all tenants if selected (default selection to 1)
+
+                            if (searchIn == "live"){
+                                document.getElementById("multi-tenant-select-button").style.display="none";
+                                document.getElementById("multi-tenant-select-button-label").style.display="none";
+                                for(var i=0, n=tenants.length;i<n;i++) {
+                                    tenants[i].selected = false;
+                                };
+                                tenants.selectedIndex = 0;
+                                document.getElementById("search").disabled=false;
+                                document.getElementById("multi-tenant-select-button").checked=false;
+                            } else {
+                                document.getElementById("multi-tenant-select-button").style.display="block";
+                                document.getElementById("multi-tenant-select-button").checked=false;
+                                document.getElementById("multi-tenant-select-button-label").style.display="block";
+                            };
+                            if (compSearch.value == "db.config"){
+                                document.getElementById("db-config-key-select").style.display="block";
+                                document.getElementById("db-config-key-label").style.display="block";
+                                document.getElementById('search-comp-value').style.display="none";
+                                document.getElementById('search-comp-value-label').style.display="none";
+                            };
+                        };
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "(search comp request failed: " + textStatus + errorThrown);
+                        compSearch.innerHTML = "                            ";
+                    });
+                };
+                /*
+                function enableDisableSearch(){
+                    if (document.getElementById("tenants-multi-select").selectedOptions.length == 0) {
+                        document.getElementById("search").disabled=true;
+                    } else {
+                        document.getElementById("search").disabled=false;
+                    };
+
+                };
+                */
+                // if a tenant is selected uncheck select all option
+                $("#tenants-multi-select").click(function(event){
+                    document.getElementById("multi-tenant-select-button").checked = false;
+                });
+
+                $('#multi-tenant-select-button').click(function(event) {   
+                    if(this.checked) {
+                        // Iterate each checkbox
+                        for(var i=0, n=tenants.length;i<n;i++) {
+                            tenants[i].selected = true;
+                        };
+                        //document.getElementById("search").disabled=false;
+                    } else {
+                        for(var i=0, n=tenants.length;i<n;i++) {
+                            tenants[i].selected = false;
+                        };
+                        //tenants.selectedIndex = 0;
+                        //document.getElementById("search").disabled=true;
+                    }
+                });
+                // search comp select
+                $('#search-comp-select').click(function(manageConfKeys) {
+                    // if search comp is db config, will retrieve the config value for a given technology
+                    var dbTechnology = document.getElementById("db-tech-select").value;
+                    var dbConfigKeys = document.getElementById("db-config-key-select");
+                    var dbConfigKeyLabel = document.getElementById("config-key-label");
+                    var searchComp = document.getElementById('search-comp-select').value;
+                    var searchCompValue = document.getElementById('search-comp-value');           
+                    var searchCompValueLabel = document.getElementById('search-comp-value-label');
+
+                    //alert(disableCompSearchValFor.indexOf(compSearch));
+                    if ( searchComp == "db.config"){
+                        console.log("config keys >>> " + dbConfigKeys);
+                        // user selected db.config comp, displaying config key field
+                        dbConfigKeys.style.display="block";
+                        dbConfigKeyLabel.style.display="block";
+                        // user selected db.config comp, hiding search comp value user input
+                        searchCompValue.style.display="none";
+                        searchCompValueLabel.style.display="none";
+                        console.log(" db technology >>> " + dbTechnology);
+                        var request = $.ajax({
+                            url: '/processAjaxReq',
+                            data: JSON.stringify({"endPoint" : "getDBConfigKey", "args" : {"dbTechnology": dbTechnology} } ),
+                            contentType: "application/json; charset=utf-8",
+                            //dataType: "json",
+                            type: 'POST'
+                        });
+                        console.log("request "+ request);
+                        request.done(function(response) {
+                            //window.location.href="/host.html";
+                            console.log(response);
+                            if(response){
+                                console.log(response);
+                                console.log(JSON.stringify(response));
+                                console.table(JSON.stringify(response));
+                                var optionHTML = "";
+                                if (response.length != 0){
+                                    for (i = 0; i < response.length; i++){
+                                        optionHTML += '<option value=' + response[i]+ ">" + response[i] + '</option>';
+                                    };
+                                };
+                                if (optionHTML){
+                                    dbConfigKeys.innerHTML = optionHTML;
+                                    dbConfigKeys.selectedIndex = 0;
+                                }else{
+                                    dbConfigKeys.innerHTML = "                 ";
+                                };
+                                console.log("optionHtml >>> " + optionHTML);
+                                console.log("config keys >>> " + dbConfigKeys);  
+                            };
+                        });
+                        document.getElementById("results-table").style.width="120%";                
+                    } else if (searchComp == "oplog.size") {
+                        searchCompValue.style.display="none";
+                        searchCompValueLabel.style.display="none";
+                        dbConfigKeys.style.display="none";
+                        dbConfigKeyLabel.style.display="none";
+                        document.getElementById("results-table").style.width="100%";
+
+                    } else if (searchComp == "current.op" || searchComp == "top" || searchComp == "log" || searchComp == "conn.stats" || searchComp == "replication.info" || searchComp == "db.latest.backup" || searchComp == "server.status" || searchComp == "hosts.info") {
+                        searchCompValue.style.display="none";
+                        searchCompValueLabel.style.display="none";
+                        dbConfigKeys.style.display="none";
+                        dbConfigKeyLabel.style.display="none";
+                        document.getElementById("results-table").style.width="120%";
+                    } else {
+                        //alert("choice is not db config and " + disableCompSearchValFor);
+                        // user did not select db.config, hiding config key field and display comp search value 
+                        dbConfigKeys.style.display="none";
+                        dbConfigKeyLabel.style.display="none";
+                        // user did not select db.config, displaying search comp value input field 
+                        searchCompValue.style.display="block";
+                        searchCompValueLabel.style.display="block";
+                        document.getElementById("results-table").style.width="100%";
+                    };
+                });
+            </script>
+        </form>
+    </div>
+{% endblock content%}
+    <!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+{% endblock script %}

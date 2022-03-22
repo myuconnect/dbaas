@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Application Invenotry)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+
+    <div class = "row no-gutters mx-auto pl-1 mt-3">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <!--<h1 class="text-center"> Admin Roster </h1>-->
+        <form method="POST" action = "{{ url_for('app_inventory') }}">
+            <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+
+            {{ form.opco(style="width:180px;font-size:18px;") }}
+            {{ form.dbTechnology(style="width:200px;font-size:18px;") }}
+
+            <label class="d-inline-block"> </label>
+            <input type="submit" class="me-3 btn btn-primary btn-md" value="Apply">
+
+            <label class="me-5 d-inline-block" style='float: right;'>
+                <!--<button class="btn btn-outline-primary btn-md"><i class="fas fa-plus-square"></i></button>-->
+                <a href="{{ url_for('new_application') }}" class="btn btn-outline-primary btn-md" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="New application"><i class="fas fa-plus-square"></i></a>
+            </label>
+
+            <div class="mt-3"></div> <!-- empty line -->
+            <!-- table-responsive is needed for td class text-nowrap to be used -->
+            <table id="appInventoryTable" class="table table-sm table-bordered table-responsive table-hover" border="1" style="width:100%">
+                <thead class="table-primary">
+                    <tr>
+                        <th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th>
+                        {% for header in headings %}
+                            <th class="text-nowrap" style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="table-light">
+                    {% for row in data %}
+                        <tr>
+                            <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                <span><button type= "button" class="btn btn-sm btn-outline-primary btn-edit-app-details" role="button" ><i class="fas fa-edit"></i></button></span>
+                            </td>
+                            {% for cell in row %}
+                                {% if loop.index == 7 %}
+                                    <td class="text-wrap"> {{ cell }} </td>
+                                {% elif  loop.index in [8,9,10]  %}
+                                    <td class="text-nowrap" style="text-align: right"> {{ cell }} </td>
+                                {% else %}
+                                    <td class="text-nowrap"> {{ cell }} </td>                                
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        <div>
+            <!-- <input type="submit" class="btn btn-primary btn-sm" type="download" value="Download">-->
+            <!--<button class="btn btn-primary btn-md"><i class="fa fa-download"></i> Download</button> -->
+            {% if data|length > 0 %}
+                <!--<input type="submit" class="btn btn-primary btn-md" data-bs-toggle="tooltip" data-bs-placement="top" title="Download content" value="Download"><i class="fa fa-download"></i>-->
+                <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download"><i class="fa fa-download"></i> Download</button>
+            {% else %}
+                <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download" disabled><i class="fa fa-download"></i> Download</button>
+            {% endif %}
+        </div>
+        </form>
+        <!-- Modal -->
+        <script>
+            $('#appInventoryTable').DataTable({
+                'columnDefs': [ {
+                    'targets': [0], // column index (start from 0)
+                    'orderable': false // set orderable false for selected columns
+                 }]
+            });
+            $(document).on('click',".btn-edit-app-details", function(click){
+                var currentRow = $(this).closest('tr')
+                var currentRow=$(this).closest("tr");
+                var applicationId = currentRow.find("td:eq(1)").text(); // get the qst cell value
+                var request = $.ajax({
+                    url: '/processAjaxReq',
+                    data: JSON.stringify({"endPoint" : "editAppDetails", "args" : {"applicationId": applicationId}}),
+                    contentType: "application/json; charset=utf-8",
+                    //dataType: "json",
+                    type: 'POST'
+                });
+                request.done(function(response) {
+                    if(response){
+                        console.log(response);
+                        window.location.href=response.redirect;
+                    }
+                });
+                request.fail(function(jqXHR, textStatus, errorThrown) {
+                    console.warn(jqXHR.responseText)
+                    console.log(JSON.stringify(jqXHR));
+                    console.log( "Request failed: " + textStatus + errorThrown);
+                });
+                click.stopPropagation();
+                click.preventDefault();
+            });
+        </script>
+    </div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+{% endblock script %}

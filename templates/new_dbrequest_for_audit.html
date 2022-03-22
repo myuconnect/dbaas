@@ -1,0 +1,250 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    {{ super() }}
+{% endblock head %}
+
+{% block title %}
+    MMC-DbaaS (Onboarding New Host)
+{% endblock title%}
+
+{% block user %}
+    <div>
+        <li class="nav-item"><i class="fas fa-user"></i>{{ user }}<a class="nav-link" href="#"></a></li>
+    </div>
+{% endblock user %}
+
+{% block content %}
+<!--
+<form>
+  <div class="form-group row">
+    <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+    </div>
+  </div>
+-->
+    <!--<h1 class="h3 mb-3 font-weight-normal text-center mt-2">{{ title }}</h1> -->
+  	<div class="ms-3 me-5 mt-3 row border border-left-1 border-primary border-3 mb-2">
+		<!-- <form style="max-width:400px;margin:auto;"> 
+        https://www.youtube.com/watch?v=b9W2ul2VRRc
+        -->
+        <form class="horizontol" action="{{ url_for('new_db_request') }}" method="POST" >
+
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+
+            <!--
+            <h6 class="mt-2" align="left"><span class="mt-2 p-2 label label-default form-control-lg ">DB Technology</span></h6>
+            <h6><span class="label label-default form-control-md" style="float:left;font-size:20px; align-content: left" for ="dbTechnology"><strong>DB&nbsp;Technology</strong></span></h6>-->
+            <div class="inline-block mt-3" style="font-size:15px;">
+                <label class="ms-3 me-1"for="dbTechnology"><strong>DB Technology:</strong></label>
+                {{form.dbTechnology(class= "me-5",id="db-tech-select")}}
+                <label class="ms-5 me-1" for="database" ><strong>Database:</strong></label>
+                {{form.tenantName(class="me-5", id="tenant-select")}}
+            </div>
+            <div class="row col mx-auto">
+                <div class="col col-xs-2 order-1 mb-1 pb-0 inline-block mt-2" style="font-size:15px; text-align: left">
+                    <fieldset class="mt-2 p-1" style="width:400px">
+                        <label for="dbCluster"><strong>DB Cluster</strong></label>
+                        <input class="form-control form-control-sm" type="text" id="dbCluster" name="dbCluster" value = "{{ form.dbCluster }}" readonly disabled>
+                        <!--<label for="env" style="font-size:20px;"><strong>Environment</strong></label>-->
+                        <label><strong>Environment</strong></label>                        
+                        <input class="form-control form-control-sm" type="text" id="env" name="env" value = "{{ form.env.upper() }}" readonly disabled>
+                        <label for="version"><strong>DB Version</strong></label>
+                        <input class="form-control form-control-sm" type="text" id="version" name="version" value = "{{ form.version }}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0" style="font-size:15px;">
+                    <fieldset class="mt-2 p-1" style="width:400px">
+                        <h6 class="mt-2" align="left"><span class="mt-2 p-1 label label-default form-control-md"><strong>Operation</strong></span></h6>
+                        {{form.op(class="form-control form-control-md required", size=50, id="op")}}
+                        <h6 class="mt-2" align="left"><span class="mt-2 p-1 label label-default form-control-md"><strong>Implementation Date </strong></span></h6>
+                        {{form.when(class="form-control form-control-md required", type="date", id="when")}}
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0" style="font-size:15px;">
+                    <fieldset class="mt-2 p-1" style="width:400px">
+                        <h6 class="mt-2" align="left"><span class="mt-2 p-1 label label-default form-control-md"><strong>CA/CO# </strong></span></h6>
+                        {{form.supportingDoc(class="form-control form-control-md required", size=50, id="supportingDoc")}}
+                        <h6 class="mt-2" align="left"><span class="mt-2 p-1 label label-default form-control-md"><strong>Comments</strong></span></h6>
+                        {{form.comments(class="md-textarea form-control required", id="comments", resize="none", rows="3", cols="2")|safe}}
+                    </fieldset>
+                    <div class="inline-block mt-3">
+                        {{ form.submit(class="btn btn-lg btn-primary btn-block mb-3", style="float: right;") }}
+                    </div>
+                </div>
+            </div>
+            <!-- How to add a list of tags to a Flask > WTForms > Jinja2 form?
+                https://stackoverflow.com/questions/62065605/how-to-add-a-list-of-tags-to-a-flask-wtforms-jinja2-form 
+            -->
+            <script>
+                document.getElementById("db-tech-select").addEventListener("change", populateDatabase4Tech);
+                document.getElementById("tenant-select").addEventListener("change", getTenantDetails);
+                // populate tenantname for a given db technology
+                function populateDatabase4Tech(){
+                    var dbTechElem = document.getElementById("db-tech-select");
+                    var tenantSelect = document.getElementById("tenant-select");
+                    var myDBTechnology = dbTechElem.value;
+                    //alert("db tech selected 1 " + myDBTechnology);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "getDBLists4Tech", "args" : {"dbTechnology": myDBTechnology} } ),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    //alert(request);
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        if(response){
+                            console.log(response);
+                            console.log(JSON.stringify(response));
+                            console.table(JSON.stringify(response));
+                            var optionHTML = "";
+                            if (response.length != 0){
+                                for (i = 0; i < response.length; i++){
+                                    optionHTML += '<option value=' + response[i].id + ">" + response[i].id + '</option>';                                    
+                                };
+                            };
+                            //alert("option html "+ optionHTML)
+                            if (optionHTML){
+                                tenantSelect.innerHTML = optionHTML;
+                                document.getElementById("op").disabled = false;
+                                document.getElementById("when").disabled = false;
+                                document.getElementById("supportingDoc").disabled = false;
+                                document.getElementById("comments").disabled = false;
+                                document.getElementById("submit").disabled = false;
+                                getTenantDetails();
+                            }else{
+                                //alert("optionHTML is null")
+                                // disabling the field since we dont have any database available for tech selected by user
+                                tenantSelect.innerHTML = "                 ";
+                                $("#dbCluster").val("");
+                                $("#env").val("");
+                                $("#version").val("");
+                                document.getElementById("op").disabled = true;
+                                document.getElementById("when").disabled = true;
+                                document.getElementById("supportingDoc").disabled = true;
+                                document.getElementById("comments").disabled = true;
+                                document.getElementById("submit").disabled = true;
+                            };
+                            console.log("optionHtml >>> " + optionHTML);
+                            console.log("tenantSelect >>> " + tenantSelect);    
+
+                            //window.location.href=response.redirect;
+                        };
+                        //$('#response').text(JSON.stringify(response)); 
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                        tenantSelect.innerHTML = "                            ";
+                        $("#dbCluster").value("");
+                        $("#env").value("");
+                        $("#version").value("");
+                    });
+                };
+                // retrieve tenant details for a given tenant
+                function getTenantDetails(){
+                    var dbTechElem = document.getElementById("db-tech-select");
+                    var tenantSelect = document.getElementById("tenant-select");
+                    var myDBTechnology = dbTechElem.value;
+                    var myTenantName = tenantSelect.value;
+
+                    //alert("db tech selected 1 " + myDBTechnology);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "getDBTenantDetails", "args" : {"tenantName" : myTenantName} } ),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    //alert(request);
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        if(response){
+                            console.log(response);
+                            console.log(JSON.stringify(response));
+                            console.table(JSON.stringify(response));
+
+                            if (response.length != 0){
+                                $("#dbCluster").val(response.dbCluster);
+                                $("#env").val(response.env.toUpperCase());
+                                $("#version").val(response.version);
+                            };
+                        };
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                };
+                /*
+                $('#db-tech-select').change(function(obj){
+                    obj.stopPropagation();
+                    obj.preventDefault();
+                    var dbTechElem = document.getElementById("db-tech-select");
+                    //var element2 = document.getElementById("dbtech_select");
+                    var myDBTechnology = dbTechElem.value;
+                    alert("db tech selected 2 " + myDBTechnology);
+                });
+
+                $(document).on("change","db-tech-select", function(obj){
+                    obj.stopPropagation();
+                    obj.preventDefault();
+
+                    var dbTechElem = document.getElementById("db-tech-select");
+                    //var element2 = document.getElementById("dbtech_select");
+                    var myDBTechnology = dbTechElem.value;
+                    alert("db tech selected 3" + myDBTechnology);
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "getDatabase4DBTech", "args" : {"dbTechnology": myDBTechnology} } ),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    alert(request);
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        if(response){
+                            console.log(response);
+                            console.log(JSON.stringify(response));
+
+                            //window.location.href=response.redirect;
+                        };
+                        //$('#response').text(JSON.stringify(response)); 
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                    });
+                });
+                */
+
+                //$(document).ready(function(){
+                //    $("select#next").change(function() {
+
+                //        var managerName = $(this).find('option:selected').text();
+
+                //        $.ajax({
+                //            type: 'GET',
+                //            url: "/getEmployees",
+                //            data: { manager: managerName }
+                //            contentType: 'application/json',
+                //            dataType: 'json'
+                //        });
+                //    });
+                //});*/
+            </script>
+
+        </form>
+
+	</div>
+{% endblock content %}
+{% block script %}
+{% endblock script %}

@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Audit Data)
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    <form action="{{ url_for('audit_data') }}" method="POST">
+        {{ form.csrf_token }}
+        {{ form.hidden_tag() }}
+        <label class="d-inline-block text-center mt-3 mb-3" for="filter" style="font-size:20px;"><strong>Filter</strong></label>
+        {{ form.opco }}
+        {{ form.env }}
+        {{ form.dbTechnology }}
+        {{ form.startDate(type="date") }}
+        {{ form.endDate(type="date") }}
+        {{ form.submit(class="btn btn-primary",type="submit") }}                
+    </form>
+    {% if (auditData is defined) and auditData %}
+        <div>
+            <table id="auditTable" class="table table-sm table-striped table-bordered table-stripped table-responsive table-hover" style="width:100%">
+                <thead class="table-primary">
+                    <tr>
+                        {% for header in auditData.headings %}
+                            <th> {{ header }}  </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="table-light">
+                    {% for row in auditData.data %}
+                        <tr>
+                            {% for cell in row %}
+                                <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                $('#auditTable').DataTable({
+                    "order": [[ 2, "desc", 4, "asc" ]],
+                    colReorder: true
+                });
+            </script>
+            <!-- Multi tables https://datatables.net/examples/basic_init/multiple_tables.html -->
+        </div>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

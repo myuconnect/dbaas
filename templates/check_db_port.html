@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC-DbaaS (Database Port Open - Status)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+        <div class = "row no-gutters mx-auto pl-1 mt-3">
+            <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+            <!-- <h1 class="text-center"> Host Invenotry {{ current_user.name }}</h1> -->
+            <form method="POST" action = "{{ url_for('check_db_port') }}">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                <div>
+                    <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+                    {{ form.dbTechnology(style="width:200px;font-size:18px;", id="dbtech-select") }}
+                    {{ form.status(style="width:200px;font-size:18px;", id="status-select") }}
+                    <label class="d-inline-block"> </label>
+                    <input type="submit" class="btn btn-primary btn-md" name="filter" data-bs-toggle="tooltip" data-bs-placement="top" title="Check port open" value="Check">
+                </div>
+                <div style="height: 10px;"></div> <!-- empty line -->
+                <table id="dbPortTable" class="table table-active table-sm table-bordered table-striped table-responsive table-hover" style="width:100%">
+                    <thead class="table-primary">
+                        <tr>
+                            {% for header in results.headings %}
+                                <th style="text-align:center; vertical-align: middle;"> {{ header }}  </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="table-light">
+                        {% for row in results.data %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td class="text-nowrap non-clickable-row" style="cursor:default"> {{ cell }} </td>                                    
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if results.data is defined and results.data %}
+                    <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download"><i class="fa fa-download"></i> Download</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary btn-md btn-download" name="download" value="download" readonly disabled><i class="fa fa-download"></i> Download Firewall Sheet</button>
+                {% endif %}                
+            </form>
+            <script>
+                $('#dbPortTable').DataTable({
+                    'columnDefs': [ {
+                    'targets': [0], // column index (start from 0)
+                    'orderable': false // set orderable false for selected columns
+                    }]
+                });
+            </script>
+        </div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+
+{% block script %}
+{% endblock script %}

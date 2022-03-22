@@ -1,0 +1,258 @@
+<!doctype html>
+<!-- https://bootstrapious.com/p/bootstrap-sidebar -->
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- bootstrap css-->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Marsh.png')}}">
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='layout_menu_style.css')}}"> -->
+
+    <title>
+        {% block title %}{% endblock title%} 
+    </title>
+    <!-- <title>MMC-DbaaS</title> -->
+    <style type="text/css">
+    .loader,
+	.loader:after {
+	    border-radius: 50%;
+	    width: 10em;
+	    height: 10em;
+	}
+	.loader {            
+	    margin: 60px auto;
+	    font-size: 10px;
+	    position: relative;
+	    text-indent: -9999em;
+	    border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+	    border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+	    border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+	    border-left: 1.1em solid #ffffff;
+	    -webkit-transform: translateZ(0);
+	    -ms-transform: translateZ(0);
+	    transform: translateZ(0);
+	    -webkit-animation: load8 1.1s infinite linear;
+	    animation: load8 1.1s infinite linear;
+	}
+	@-webkit-keyframes load8 {
+	    0% {
+	        -webkit-transform: rotate(0deg);
+	        transform: rotate(0deg);
+	    }
+	    100% {
+	        -webkit-transform: rotate(360deg);
+	        transform: rotate(360deg);
+	    }
+	}
+	@keyframes load8 {
+	    0% {
+	        -webkit-transform: rotate(0deg);
+	        transform: rotate(0deg);
+	    }
+	    100% {
+	        -webkit-transform: rotate(360deg);
+	        transform: rotate(360deg);
+	    }
+	}
+	#loadingDiv {
+	    position:absolute;;
+	    top:0;
+	    left:0;
+	    width:100%;
+	    height:100%;
+	    background-color:#000;
+	}    	
+    </style>
+  </head>
+  <body>
+	<!-- Feedback Modal
+	<div class="modal fade" id="feedback-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	      </div>
+	      <div class="modal-body">
+	        ...
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	-->
+	<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">DbaaS</a>
+		    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+	    </button>
+	    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+	      <ul class="navbar-nav">
+			<li class="nav-item">
+				<!--<a class="nav-link active" aria-current="page" href="home.html">Home<img src="home.svg" width="30" height="30" alt=""></a>-->				
+				<a class="nav-link active" aria-current="page" href="{{url_for('home')}}"><i class="fas fa-home"></i></a>
+			</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownHostMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">Assets</a>
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownHostMenu">
+					<li><a class="dropdown-item" href="{{url_for('hosts')}}">Hosts</a></li>
+					<li><a class="dropdown-item" href="{{url_for('tenants')}}">Databases</a></li>
+					<li><a class="dropdown-item" href="{{url_for('admin_roster')}}">DB Admin</a></li>
+					<li><a class="dropdown-item" href="{{url_for('app_inventory')}}">Applications</a></li>
+				</ul>
+			</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDBMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">Compliance</a>
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownDBMenu">
+					<li><a class="dropdown-item" href="{{url_for('compliances')}}">DB Compliances</a></li>
+					<li><a class="dropdown-item" href="{{url_for('comp_tasks')}}">Comp Tasks</a></li>
+					<li><a class="dropdown-item" href="{{url_for('licensing')}}">Mongo Licensing</a></li>
+					<li><a class="dropdown-item" href="{{url_for('comp_report')}}">Generate Report</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('under_construction') }}">Submit Compliance Report</a></li>
+					<!--<li><a class="dropdown-item" href="#">Database Version</a></li> -->
+				</ul>
+			</li>
+			<!--
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCompMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">Reports</a>
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownCompMenu">
+					<ul class='dropdown-menu multi-level' role='menu' aria-labelledby='dropdownMenu'>
+						<li class = 'dropdown-submenu'>
+							<a  tabindex = '-1' href='#'><span class = 'glyphicon glyphicon-cog'> </span>  Transaction </a>
+							<ul class='dropdown-menu'>
+								<li><a tabindex='-1' href='#'> Withdrawal / Deposit </a></li>
+								<li><a tabindex='-1' href='#'> Fixed Deposit </a></li>
+							</ul>
+						</li>
+						<li role='separator' class='divider'></li>
+						<li><a href='#'><span class='glyphicon glyphicon-list-alt'> </span> Summaries </a></li>
+						<li><a href='#'><span class='glyphicon glyphicon-wrench'> </span>  Settings </a></li>
+					</ul>
+					<li class="dropend dropdown-submenu">
+						<a class="dropdown-toggle" data-toggle="dropdown"href="#">Data</a>
+					</li>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="#">Database Version</a></li>
+						<li><a class="dropdown-item" href="#">New Version</a></li>
+						<li><a class="dropdown-item" href="#">EOS/EOL</a></li>
+					</ul>
+					<li><a class="dropend dropdown-toggle" aria-expanded="false" role="button" aria-haspopup="true" >test1</a></li>
+					<ul class="dropdown-menu">
+						<a class="dropdown-item" href="#">E</a>
+						<a class="dropdown-item" href="#">F</a>
+						<a class="dropdown-item" href="#">G</a>
+						<a class="dropdown-item" href="#">H</a>
+					</ul> 
+					<li><a class="dropdown-item" href="{{url_for('audit_data')}}">Audit Data</a></li>
+				</ul>
+			</li>-->
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownViewMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">DBA</a>
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownViewMenu">
+					<li><a class="dropdown-item" href="{{ url_for('product_version') }}">DB Version Mgmt</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('scan_status') }}">DB Scan Status</a></li>					
+					<li><a class="dropdown-item" href="{{ url_for('ldap_query') }}">AD Tools</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('search_db_comp') }}">Search DB Component</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('check_db_port') }}">Check Database Connectivity</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('under_construction') }}">Manage DB Crendetial</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('under_construction') }}">Patching</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('under_construction') }}">Reporting</a></li>
+				</ul>
+			</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDataMgmtMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">Misc</a>
+				<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownDataMgmtMenu">
+					<li><a class="dropdown-item" href="{{ url_for('other_info') }}">Inc Area/CO Category/DL</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('under_construction') }}">How to</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('under_construction') }}">SOPs</a></li>
+					<li><a class="dropdown-item" href="{{ url_for('under_construction') }}">New Firewall Request Form</a></li>
+					<!--<li><a class="dropdown-item" href="{{url_for('under_construction')}}">Test (internal only)</a></li> -->
+				</ul>
+			</li>
+	      </ul>
+	    </div>
+	    <div class="text-white bg-dark muted me-5">
+  			<h2>{{ title }}</h2>
+		</div>
+	    <div class="text-white bg-dark muted ms-5">
+  			<a>{{ user }}</a>
+		</div>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarCollapse">
+        <ul class="navbar-nav">
+            <!--<li class="nav-item"><a class="nav-link" href="feedback.html"><i class="far fa-comments"></i></a></li> -->
+            <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Feedback"><a class="nav-link" href="{{ url_for('feedback' )}}"><i class="far fa-comments"></i></a></li>
+            <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Logout"><a class="nav-link" href="{{ url_for('logout' )}}"><i class="fas fa-sign-out-alt"></i></a></li>
+        </ul>
+        </div>
+        <!--
+		<form class="d-flex">
+			<input class="form-control me-1" type="search" placeholder="Search" aria-label="Search">
+			<button class="btn btn-outline-success" type="submit">Search</button>
+    	</form>
+        -->
+	  </div>
+	</nav>    <!-- Optional JavaScript; choose one of the two! -->
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+    <!-- for data table sorting -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"> </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+
+    <!-- search pane column filter 
+	<script src="https://cdn.datatables.net/searchpanes/1.2.1/css/searchPanes.dataTables.min.css"></script>
+	<script src="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+	-->
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js" integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
+    -->
+    <div class="container-fluid">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{category}} alert-dismissible fade show" style="max-width:800px;margin:auto;" role="alert">
+                     <span>{{ message }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock content %}
+    </div>
+    <script>
+        {% block script %}
+        {% endblock script %}
+		$('body').append('<div style="" id="loadingDiv"><div class="loader">Loading...</div></div>');
+		$(window).on('load', function(){
+		  setTimeout(removeLoader, 100); //wait for page load PLUS two seconds.
+		});
+
+		function removeLoader(){
+		    $( "#loadingDiv" ).fadeOut(500, function() {
+		      // fadeOut complete. Remove the loading div
+		      $( "#loadingDiv" ).remove(); //makes page more lightweight 
+		  });  
+		}    
+    </script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<!-- https://stackoverflow.com/questions/1853662/how-to-show-page-loading-div-until-the-page-has-finished-loading -->
+
+  </body>
+</html>

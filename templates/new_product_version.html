@@ -1,0 +1,197 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    {{ super() }}
+{% endblock head %}
+
+{% block title %}
+    MMC-DbaaS (New Product Version)
+{% endblock title%}
+
+{% block user %}
+    <div>
+        <li class="nav-item"><i class="fas fa-user"></i>{{ user }}<a class="nav-link" href="#"></a></li>
+    </div>
+{% endblock user %}
+
+{% block content %}
+  	<div class="ms-3 me-5 mt-5">
+		<!-- <form style="max-width:400px;margin:auto;"> -->
+        <form class="col-lg-5 offset-lg-3" id="new-prod-ver-form" method="POST" action = "{{ url_for('new_product_version') }}">
+
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+
+            <div class="row g-3 border border-left-1 border-primary border-3 col ms-3 me-3 mt-2">
+                <div >
+                    <h6><span class="label label-default form-control-md"><strong>DB Technology</strong></span></h6>
+                    {{ form.dbTechnology(class="form-control form-control-md mb-3", id="db-tech-select") }}
+                    <h6><span class="label label-default form-control-md"><strong>Base Version</strong></span></h6>
+                    {{ form.baseVersion(class="form-control form-control-md mb-3", id="base-ver-select") }}
+                    <h6><span class="label label-default form-control-md" id="base-ver-released-date-label"><strong>Released Date</strong></span></h6>
+                    {{ form.baseVerReleasedDate(class="form-control form-control-md mb-3", readonly=true, disabled=true, id="baseVerReleasedDate") }}
+                    <h6><span class="label label-default form-control-md" id="current-version-label"><strong>Current Version</strong></span></h6>
+                    {{ form.currVersion(class="form-control form-control-md mb-3", readonly=true, disabled=true, id="currVersion") }}
+                    <h6><span class="label label-default form-control-md" id="current-ver-released-date-label"><strong>Released Date</strong></span></h6>
+                    {{ form.currVerReleasedDate(class="form-control form-control-md mb-3", readonly=true, disabled=true, id="currVerReleasedDate") }}
+                    <h6><span class="label label-default form-control-md"><strong>New Version</strong></span></h6>
+                    {{ form.newVersion(class="form-control form-control-md mb-3", required="required", id="newVersion") }}
+                    <h6><span class="label label-default form-control-md"><strong>Released Date</strong></span></h6>
+                    {{form.newVerReleasedDate(class="form-control form-control-md mb-3", required="required",type="date", id="newVerReleasedDate")}}
+                    <strong>{{ form.eosEolCheck.label(class="mb-3")}}</strong> {{ form.eosEolCheck(class="mb-3", id="eol-check")}}
+
+                    <h6><span class="label label-default form-control-md mt-3", id="eol-date-label" style="display:none;"><strong>EOL Date</strong></span></h6>
+                    {{ form.eosDate(class="form-control form-control-md mb-3", type="date", id="eosDate", style="display:none;") }}
+                    <h6><span class="label label-default form-control-md mt-3", id="eos-date-label" style="display:none;"><strong>EOS Date</strong></span></h6>
+                    {{ form.eolDate(class="form-control form-control-md mb-3", type="date", id="eolDate", style="display:none;") }}
+
+                    <div class="mt-3">
+                        {{ form.submit(class="btn btn-lg btn-primary btn-block mb-3", style="float: right;") }}
+                    </div>
+                </div>
+            </div>
+        </form>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                document.getElementById("db-tech-select").addEventListener("change", populateBaseVer4Tech);
+                document.getElementById("base-ver-select").addEventListener("change", populateVer4Base);
+                document.getElementById("eol-check").addEventListener("click", dispHideEosEol);
+                function populateBaseVer4Tech(){
+                    var dbTechnology = document.getElementById("db-tech-select").value;
+                    var request = $.ajax({
+                        url: '/processAjaxReq',
+                        data: JSON.stringify({"endPoint" : "getAllValidBaseVersion", "args" : {"dbTechnology": dbTechnology} } ),
+                        contentType: "application/json; charset=utf-8",
+                        //dataType: "json",
+                        type: 'POST'
+                    });
+                    request.done(function(response) {
+                        //window.location.href="/host.html";
+                        console.log(response);
+                        if(response){
+                            console.log(response);
+                            console.log(JSON.stringify(response));
+                            console.table(JSON.stringify(response));
+                            var baseVersionOptionHTML = "";
+                            if (response.length != 0){
+                                for (i = 0; i < response.length; i++){
+                                    baseVersionOptionHTML += '<option value=' + response[i]+ ">" + response[i] + '</option>';
+                                };
+                            };
+                            //adding new base version
+                            baseVersionOptionHTML += '<option value=new>New Base Version</option>';
+                            //alert("option html "+ optionHTML)
+                            if (baseVersionOptionHTML){
+                                document.getElementById("base-ver-select").innerHTML = baseVersionOptionHTML;
+                                document.getElementById("base-ver-select").selectedIndex = 0;
+                                document.getElementById("base-ver-select").disabled=false;
+                                document.getElementById("baseVerReleasedDate").value="";
+                                document.getElementById("currVersion").value="";
+                                document.getElementById("currVerReleasedDate").value="";
+                                document.getElementById("newVersion").readonly = false;
+                                document.getElementById("newVersion").disabled = false;
+                                document.getElementById("newVerReleasedDate").readonly = false;
+                                document.getElementById("newVerReleasedDate").disabled = false;
+                                document.getElementById("eol-check").disabled=false;
+                            }else{
+                                document.getElementById("base-ver-select").innerHTML = "                 ";
+                                document.getElementById("base-ver-select").disabled=false;
+                                document.getElementById("baseVerReleasedDate").value="";
+                                document.getElementById("currVersion").value="";
+                                document.getElementById("currVerReleasedDate").value="";
+                                document.getElementById("newVersion").readonly = true;
+                                document.getElementById("newVersion").disabled = true;
+                                document.getElementById("newVerReleasedDate").readonly = true;
+                                document.getElementById("newVerReleasedDate").disabled = true;
+                                document.getElementById("eol-check").disabled=true;
+                            };
+                            console.log("baseVersionOptionHTML >>> " + baseVersionOptionHTML);
+                        };
+                    });
+                    request.fail(function(jqXHR, textStatus, errorThrown) {
+                        console.warn(jqXHR.responseText)
+                        console.log(JSON.stringify(jqXHR));
+                        console.log( "Request failed: " + textStatus + errorThrown);
+                        document.getElementById("base-ver-select").innerHTML = "                            ";
+                    });
+                };
+                function populateVer4Base(){
+                    var dbTechnology = document.getElementById("db-tech-select").value;
+                    var baseVersion = document.getElementById("base-ver-select").value;
+                    console.log("populateVer4Base >>> " + dbTechnology);
+                    console.log("populateVer4Base >>> " + baseVersion);
+                    if (baseVersion == "new"){
+                        console.log("base version is new")
+                        document.getElementById("base-ver-released-date-label").style.display="none";
+                        document.getElementById("baseVerReleasedDate").style.display="none";
+                        document.getElementById("current-version-label").style.display="none";
+                        document.getElementById("currVersion").style.display="none";
+                        document.getElementById("current-ver-released-date-label").style.display="none";
+                        document.getElementById("currVerReleasedDate").style.display="none";
+                    } else {
+                        document.getElementById("base-ver-released-date-label").style.display="block";
+                        document.getElementById("baseVerReleasedDate").style.display="block";
+                        document.getElementById("current-version-label").style.display="block";
+                        document.getElementById("currVersion").style.display="block";
+                        document.getElementById("current-ver-released-date-label").style.display="block";
+                        document.getElementById("currVerReleasedDate").style.display="block";
+                        console.log("base version is exisitng, using ajax to populate rest of the field value")
+                        var request = $.ajax({
+                            url: '/processAjaxReq',
+                            data: JSON.stringify({"endPoint" : "getABaseVerDetails", "args" : {"dbTechnology": dbTechnology, "baseVersion" : baseVersion} } ),
+                            contentType: "application/json; charset=utf-8",
+                            //dataType: "json",
+                            type: 'POST'
+                        });
+                        request.done(function(response) {
+                            if(response){
+                                //console.log(response);
+                                console.log(JSON.stringify(response));
+                                //console.table(JSON.stringify(response));
+                                document.getElementById("baseVerReleasedDate").value = response.baseVerReleasedDate;
+                                document.getElementById("currVersion").value = response.currentVersion;
+                                document.getElementById("currVerReleasedDate").value = response.currVerReleasedDate;
+                                document.getElementById("newVersion").readonly = false;
+                                document.getElementById("newVersion").disabled = false;
+                                document.getElementById("newVerReleasedDate").readonly = false;
+                                document.getElementById("newVerReleasedDate").disabled = false;
+                            };
+                        });
+                        request.fail(function(jqXHR, textStatus, errorThrown) {
+                            console.warn(jqXHR.responseText)
+                            console.log(JSON.stringify(jqXHR));
+                            console.log( "Request failed: " + textStatus + errorThrown);
+                            document.getElementById("base-ver-select").innerHTML = "                            ";
+                            $("#dbCluster").value("");
+                            $("#env").value("");
+                            $("#version").value("");
+                        });
+                    };
+                };
+                function dispHideEosEol(){
+                    //alert("disp/hide " + document.getElementById("eol-check").value);
+                    //console.log("disp/hide " + document.getElementById("eol-check").value);
+                    if (document.getElementById("eol-check").checked == true){
+                        //alert("display");
+                        document.getElementById("eosDate").style.display="block";
+                        document.getElementById("eos-date-label").style.display="block";
+                        document.getElementById("eolDate").style.display="block";
+                        document.getElementById("eol-date-label").style.display="block";
+                        document.getElementById("eosDate").required=true;
+                        document.getElementById("eolDate").required=true;
+                    } else { 
+                        //alert("hide");
+                        document.getElementById("eosDate").style.display="none";
+                        document.getElementById("eos-date-label").style.display="none";
+                        document.getElementById("eolDate").style.display="none";
+                        document.getElementById("eol-date-label").style.display="none";
+                        document.getElementById("eosDate").required=false;
+                        document.getElementById("eolDate").required=false;
+                    };
+                };
+            });
+        </script>
+	</div>
+{% endblock content %}
+{% block script %}
+{% endblock script %}

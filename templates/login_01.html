@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}MMC-DbaaS Login{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .important { color: #336699; }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="form-wrapper">
+    <h2 class="title">Pls Login</h2>
+
+    <form method="POST" action="{{ url_for('login') }}">
+
+      <fieldset class="form-field">
+      {{ form.networkId.label }}
+      {{ form.networkId }}
+        {% if form.networkId.errors %}
+        <ul class="errors">
+          {% for error in form.networkId.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="form-field">
+        {{ form.password.label }}
+        {{ form.password }}
+        {% if form.password.errors %}
+          <ul class="errors">
+            {% for error in form.password.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+      {{ form.submit }}
+
+      </form>
+  </div>
+{% endblock content %}

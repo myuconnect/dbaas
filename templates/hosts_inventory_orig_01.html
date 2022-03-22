@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MMC-DbaaS (Hosts Inventory)
+{% endblock title%}
+<!-- https://www.youtube.com/watch?v=2TR_6VaVSOs "Python Data Visualization With Bokeh"-->
+{% block content %}
+    <div class = "row no-gutters mx-auto pl-1">
+        <!-- <table class="table table-primary table-bordered border-primary table-striped" > -->
+        <h1 class="text-center"> Host Invenotry {{ current_user.name }}</h1>
+        <form method="POST" action = "{{ url_for('hosts_inventory') }}">
+            {{ form.csrf_token }}
+            {{ form.hidden_tag() }}
+            <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+
+            {{ form.opco }}
+            {{ form.region }}
+            {{ form.dbTechnology }}
+            {{ form.env }}
+            <label class="d-inline-block"> </label>
+            <input type="submit" class="btn btn-primary btn-sm" type="applyFilter" value="Apply">
+            <!--
+            <div class="form-inline container">
+                <div class="form-group col-sm-8" style="display: flex;">
+                    <label class="d-inline-block text-center" for="filter" style="font-size:20px;"><strong>Filter:</strong></label>
+                    <select id="opco" name = "opco" class="form-select form-select-sm border border-dark" style="font-weight: bold;" aria-label=".form-select-sm example"><span class="input-group-addon">-</span>
+                        <option value="ALL" style="font-weight: bold;">ALL Opcos</option>
+                        <option value="MARSH" style="font-weight: bold;">Marsh</option>
+                        <option value="MERCER" style="font-weight: bold;">Mercer</option>
+                        <option value="GC" style="font-weight: bold;">Guy Carpenter</option>
+                    </select>
+                    <select id="region" name = "region" class="form-select form-select-sm border border-dark" aria-label=".form-select-sm example"><span class="input-group-addon">-</span>
+                        <option value="ALL">ALL Regions</option>
+                        <option value="NAM">Noth America</option>
+                        <option value="SAM">South America</option>
+                        <option value="EMEA">Europe/Middle East/Africa</option>
+                        <option value="APAC">Asia Pacific</option>
+                    </select>
+                    <select id="dbTechnology" name = "dbTechnology" class="form-select form-select-sm border border-dark" aria-label=".form-select-sm example"><span class="input-group-addon">-</span>
+                        <option value="ALL">ALL DB Technology</option>
+                        <option value="mongo">Mongo</option>
+                        <option value="postgres">Postgres</option>
+                        <option value="mysql">MySql</option>
+                        <option value="oracleGC">Oracle</option>
+                        <option value="mssql">MS Sql</option>
+                    </select>
+                    <label class="d-inline-block"> </label>
+                    <input type="submit" class="btn btn-primary" type="applyFilter" value="Apply">
+                </div>
+            </div>
+            -->
+            <div style="height: 10px;"></div> <!-- empty line -->
+            <!-- table-responsive is needed for td class text-nowrap to be used -->
+            <table id="sortTable" class="table table-sm table-striped table-bordered table-stripped table-responsive table-hover" style="width:100%">
+                <thead class="table-primary">
+                    <tr>
+                        {% for header in headings %}
+                            <th data-sortable="true"> {{ header }}  </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="table-light">
+                    <tr class="clickable-row" onclick="window.location.href='{{ url_for('viewHost', host=row) }}';" data-href="host">
+                        {% for row in data %}
+                            <!-- on click row https://stackoverflow.com/questions/43553887/how-to-get-table-row-details-when-redirecting-->
+                            <!-- <tr onclick="window.location.href='{{ url_for('hosts_inventory') }}';"> -->
+                            {% for cell in row %}
+                                <!-- <td onclick="location.href={{ url_for('processAjaxReq') }}" class="text-nowrap" style="cursor:pointer"> -->
+                                <!-- <td data-url="{{ url_for('processAjaxReq') }}" class="text-nowrap" style="cursor:pointer">{{ cell }}</td> -->
+                                <!-- <td onclick="clickRow(this)" class="text-nowrap" style="cursor:pointer"> {{ cell }} </td>-->
+                                <td class="text-nowrap" style="cursor:pointer"> {{ cell }} </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div>
+        <!-- <input type="submit" class="btn btn-primary btn-sm" type="download" value="Download">-->
+        <button class="btn btn-info btn-sm"><i class="fa fa-download"></i> Download</button>
+    </div>
+{% endblock content%}
+<!-- https://www.educba.com/bootstrap-sort-table/ for table sorting-->
+{% block script %}
+    $('#sortTable').DataTable();
+
+    $(document).ready(function(clickable) {
+        $(document.body).on("click", "tr", function(click){
+            var currentRow=$(this).closest("tr");
+            var hostName = currentRow.find("td:eq(0)").text(); // get the qst cell value
+            //alert("host : " + hostName);
+            //var myUrl = "{{ url_for("processAjaxReq") }}";
+            //alert("url : " + myUrl);
+            //myUrl = myUrl + "/" + hostName;
+            //alert(this.dataset.href);
+            //alert("url :" + myUrl);
+            //userData = JSON.stringify({"endPoint" : "processAjaxReq", "host": hostName});
+            //window.location.href='{{ url_for('viewHost', host=hostName) }};
+
+            //$.ajax({
+            //    url: '/processAjaxReq',
+            //    data: JSON.stringify({"endPoint" : "host", "args" : {"hostName": hostName}}),
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",
+            //    type: 'POST',
+            //    success: function (response) {
+            //        window.location.href = response.responseText;
+            //        //window.location.href = response.responseText;
+            //    },
+            //    error: function(jqXHR, textStatus, errorThrown) {
+            //      console.log(JSON.stringify(jqXHR));
+            //      console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            //    }
+            //});
+            click.stopPropagation();
+            click.preventDefault();
+        });
+    });
+{% endblock script %}

@@ -1,0 +1,178 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css')}}" />
+{% endblock head %}
+{% block title %}
+    MMC-DbaaS (Database Cluster Member - {{tenantMember._id}})
+{% endblock title%}
+{% block content %}
+
+    <!-- <label for="name" class="control-label float-left mx-md-n5">Host Details</label> -->
+    {% if (tenantMember is defined) and tenantMember %}
+        <form>
+            <div class="row border border-left-1 border-light border-3 col ms-3 me-3 mt-2">
+                <div class="col col-xs-2 order-1 mb-2 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend></legend>
+                        <h6><span class="label label-default form-control-md" for ="tenant_id"><strong>ID</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="tenant_id" name="tenant_id" value = "{{tenantMember._id}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>DB&nbspCluster</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="cluster_name" name="cluster_name" value = "{{tenantMember.dbCluster}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Host</strong></span></h6>
+                        <input class="form-control form-control-md " type="text" id="host" name="host" value = "{{tenantMember.hostName}}" readonly disabled>                    
+                        <h6><span class="label label-default form-control-md"><strong>Status</strong></span></h6>
+                        <input class="form-control form-control-md " type="text" id="status" name="status" value = "{{tenantMember.status}}" readonly disabled>                    
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-2 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1" style="width:500px">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md"><strong>Opco</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="opco" name="opco" value = "{{tenantMember.opco}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Region</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="region" name="region" value = "{{tenantMember.region}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Environment</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="env" name="env" value = "{{tenantMember.env.upper()}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Docker</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="docker" name="docker" value = "{{tenantMember.docker}}" readonly disabled>
+                    </fieldset>
+                </div>
+                <div class="col col-xs-2 order-3 mb-1 pb-0">
+                    <fieldset class="mt-2 p-1">
+                        <legend class="w-auto"></legend>
+                        <h6><span class="label label-default form-control-md"><strong>Version</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="version" name="version" value = "{{tenantMember.version}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Port</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="port" name="port" value = "{{tenantMember.port}}" readonly disabled>
+                        <h6>Last <span class="label label-default form-control-md"><strong>Created</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="createdTS" name="createdTS" value ="{{tenantMember.createdTS}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Last&nbsp;Updated</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="lastUpdatedTS" name="lastUpdatedTS" value ="{{tenantMember.lastUpdatedTS}}" readonly disabled>
+                        <h6><span class="label label-default form-control-md"><strong>Boot&nbsp;Time</strong></span></h6>
+                        <input class="form-control form-control-md" type="text" id="bootTime" name="bootTime" value ="tenantMember.bootTime" readonly disabled>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+        <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-config-tab" data-bs-toggle="pill" data-bs-target="#pills-config" type="button" role="tab" aria-controls="pills-config" aria-selected="true">Config</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-build-tab" data-bs-toggle="pill" data-bs-target="#pills-build" type="button" role="tab" aria-controls="pills-build" aria-selected="false">BuildInfo</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-server-tab" data-bs-toggle="pill" data-bs-target="#pills-server" type="button" role="tab" aria-controls="pills-server" aria-selected="false">Server Status</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-config" role="tabpanel" aria-labelledby="pills-config-tab">
+                {% if 'configData' in tenantMember %}
+                    <table id="configTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:40%; left;margin-right:10px">
+                        <!-- style="width:100% float: left;margin-right:10px"> dispaly table side by side -->
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in tenantMember.configHeadings %}
+                                    <th class = "col-sm-5" style="width: 20%"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in tenantMember.configData %}
+                                <tr>
+                                    {% for cell in row %}
+                                        {% if loop.index == 2 %}
+                                            <td class="text-wrap break-word;max-width:50px;" style="cursor:default"> {{ cell }} </td>
+                                        {% else %}
+                                            <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+                <script>
+                    $('#configTable').DataTable();
+                </script>
+            </div>
+            <div class="tab-pane fade" id="pills-build" role="tabpanel" aria-labelledby="pills-build-tab">
+                {% if 'buildData' in tenantMember %}
+                    <table id="buildTable" class="table table-sm table-striped table-bordered table-responsive table-hover" style="width:40%; left;margin-right:10px">
+                        <!-- style="width:100% float: left;margin-right:10px"> dispaly table side by side -->
+                        <thead class="table-primary">
+                            <tr>
+                                <th class="text-nowrap" style="text-align:center; vertical-align: middle;">Action</th>
+                                {% for header in tenantMember.buildHeadings %}
+                                    <th class = "col-sm-5" style="width: 20%"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in tenantMember.buildData %}
+                                <tr class="clickable-row">
+                                    <td class="text-nowrap" style="text-align:center; vertical-align: middle;">
+                                        <span class="btn btn-sm btn-outline-danger btn-offboard-admin" role="button"><i class="fas fa-eye"></i></span>
+                                    </td>
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+                <script>
+                    $('#buildTable').DataTable();
+                </script>
+            </div>
+            <div class="tab-pane fade" id="pills-server" role="tabpanel" aria-labelledby="pills-sever-tab">
+                {% if 'serverData' in tenantMember %}
+                    <table id="serverTable" class="table table-sm table-striped table-bordered table-responsive table-hover mx-auto w-auto" style="width:40%; left;margin-right:10px">
+                        <!-- style="width:100% float: left;margin-right:10px"> dispaly table side by side -->
+                        <thead class="table-primary">
+                            <tr>
+                                {% for header in tenantMember.serverHeadings %}
+                                    <th class = "col-sm-5" style="width: 20%"> {{ header }}  </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            {% for row in tenantMember.serverData %}
+                                <tr class="clickable-row" data-href="tenant">
+                                    {% for cell in row %}
+                                        <td class="text-nowrap" style="cursor:default"> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="text-center">
+                        <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+                    </div>
+                {% endif %}
+                <script>
+                    $('#serverTable').DataTable();
+                </script>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='no-data.png')}}" class="img-fluid" style="width: 150px;">
+        </div>
+    {% endif %}           
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
+

@@ -1,0 +1,14 @@
+{
+	"restEndPoint" : "http://usdfw21as383v:8000/api/audit/processRequest",
+	"restPort" : 5000,	
+	"restSrvcAcct" : "DMZPROD01\\svc-dev-deploy-app",
+	"restApiKey" : "eXokNzl5NEUzOWdXNCkp",	
+	"downloadDir" : "C:\\Users\\U1167965\\OneDrive - MMC\\HomeDrive_USNYC61NS2VF1_ma_nyc_1bvf1_users4\\app\\www\\dbaas\\download",
+	"uploadDir" : "",
+	"howToDocDir" : "",
+	"downloadRetentionDays" : 10,
+	"uploadRetentionDays" : 30,
+	"sqlAchemyDBUri" : "sqlite:///C:\\Users\\U1167965\\OneDrive - MMC\\HomeDrive_USNYC61NS2VF1_ma_nyc_1bvf1_users4\\app\\www\\wip\\dbaas\\db\\login.db",
+	"SMTP_SERVER" : "",
+	"SECRET_KEY" : "qwrwyeqg67re2q3wdhfaiydfasydfasdtif62r1rqwere1332wsQSXAx:jpHCOQW"
+}

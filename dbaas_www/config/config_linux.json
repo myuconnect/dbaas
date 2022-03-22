@@ -1,0 +1,12 @@
+{
+        "port" : 5000,
+        "restApiPortEndPoint" : "http://usdfw21as383v:8000/api/audit/processRequest",
+        "downloadDir" : "/opt/ansible/app/www/dbaas/download",
+        "uploadDir" : "/opt/ansible/app/www/dbaas/upload",
+        "howToDocDir" : "",
+        "downloadRetentionDays" : 10,
+        "uploadRetentionDays" : 30,
+        "sqlAchemyDBUri" : "sqlite:////opt/ansible/app/www/dbaas/db/login.db",
+        "SMTP_SERVER" : "",
+        "SECRET_KEY" : "qwrwyeqg67re2q3wdhfaiydfasydfasdtif62r1rqwere1332wsQSXAx:jpHCOQW"
+}

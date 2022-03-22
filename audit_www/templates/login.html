@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "bootstrap/form.html" import render_field %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block styles %}
+{{super}}
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<form class ="form-signin" method="POST" accept-charset="utf-8" action="/login">
+		<h2 class="form-signin-heading">Pls sign in</h2>
+			{{ form.csrf_token() }}
+			{{ form.hidden_tag() }}
+			<!-- <div> {{ render_field(form.username) }} {{ form.username(class="input-sm") }} </div> -->
+			<div>
+				{{ render_field(form.username, form_type="basic")}}
+			</div>
+			<div>
+				{{ render_field(form.password) }}
+			</div>
+			{{ render_field(form.remember) }}
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+		</form>
+	</div>
+{% endblock content %}

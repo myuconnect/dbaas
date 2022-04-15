@@ -1,5 +1,5 @@
-from com.mmc.common.globals import Globals
-from com.mmc.common.singleton import Singleton
+from com.<>.common.globals import Globals
+from com.<>.common.singleton import Singleton
 
 from urllib.parse import quote_plus
 from git import Repo

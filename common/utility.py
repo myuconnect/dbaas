@@ -42,6 +42,15 @@ class Utility(object, metaclass=Singleton):
 		# print ordinal # 1st, 2nd, 3rd, 4th .....
 		self.lambdaOrdinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n/10%10!=1)*(n%10<4)*n%10::4])
 
+		self.lambdaGetCurTSStr = lambda : time.ctime()
+		self.lambdaGetCurrTSTZ = lambda tz = self.TZ : datetime.datetime.now(tz if tz else self.TZ)
+		self.lambdaGetCurrTSTZStr = lambda tz  = self.TZ : datetime.datetime.now(tz if tz else self.TZ).isoformat()
+		self.lambdaGetCurUTCTSStr = lambda : datetime.datetime.utcnow().isoformat()
+		self.lambdaCurrMethod = lambda n=0: sys._getframe(n + 1).f_code.co_name
+
+		requests.packages.urllib3.disable_warnings("InsecureRequestWarning")
+		urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+		
 		self.outputStdout = "stdout"
 		self.outputStdoutNFile = "both"
 		self.outputFile = "file"
